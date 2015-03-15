@@ -1,0 +1,89 @@
+application: hardcode-appdaptor
+version: syscan-final
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+
+default_expiration: "1d"
+
+
+handlers:
+
+
+- url: /_ah/mail/verify-student@.+
+  script: mailReceiver.verifyStudent
+  login: admin
+
+- url: /_ah/mail/.+
+  script: mailReceiver.general
+  login: admin
+  
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /script
+  static_dir: script
+  
+- url: /style
+  static_dir: style
+  
+- url: /image
+  static_dir: image
+  
+- url: /resource
+  static_dir: resource
+
+  
+- url: /cron/.*
+  script: cron.app
+  login: admin
+
+- url: /admin/.*
+  script: adminHome.app
+  login: required
+  secure: always
+
+- url: /user/.*
+  script: userHome.app
+  login: required
+  secure: always
+
+- url: /profile/.*
+  script: profileHome.app
+  secure: always
+
+- url: /item/.*
+  script: itemHome.app
+  secure: always
+
+- url: /search/.*
+  script: searchHome.app
+  secure: always
+
+- url: /message/.*
+  script: messageHome.app
+  login: required
+  secure: always
+
+
+- url: /webservices/.*
+  script: webServiceHome.app
+  secure: always
+
+
+- url: /.*
+  script: main.app
+  secure: always
+
+
+
+inbound_services:
+- mail
+- xmpp_message
+
+
+libraries:
+- name: webapp2
+  version: "2.5.2"
