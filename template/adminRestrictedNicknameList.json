@@ -1,0 +1,12 @@
+{% spaceless %}
+[
+{% for nickname in nicknameList %}  {
+    "type": "{{ nickname.type }}",
+    "value": "{{ nickname.value }}",
+    "remarks": "{{ nickname.remarks }}",
+    "endOfList": "{{ nickname.endOfList }}"
+  }{% ifnotequal nickname.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

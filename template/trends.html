@@ -1,0 +1,168 @@
+{% extends "template.html" %}
+{% block title %}
+  Trends | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+<style>
+.bar_trends{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+<div class="itemListTypeContainer">
+  <div class="categoryType categoryType_HOT selectedCategoryType"><a href="#hot">What's Hot</a></div>
+  <div class="categoryType categoryType_WANTED"><a href="#wanted">Most wanted</a></div>
+  <div class="categoryType categoryType_DEALS"><a href="#deals">Recent Deals</a></div>
+</div>
+
+<div class="itemListTitle">
+  <div class="itemListTitleInnerStyle" style="text-align:center;">
+    <span id="categoryTitle">What's Hot (Top 20)</span>
+  </div>
+</div>
+<div class="itemListContainer">
+  <!-- insert result here-->
+  <div class='resultNotFound' style='border:none;'>Loading...</div>
+
+</div>
+
+{% endblock %}
+
+
+{% block bottomScript %}
+
+<script>
+
+var _CURRENT_CATEGORY_TYPE = "hot";
+
+
+if(location.hash == "#hot"){
+  _CURRENT_MESSAGE_TYPE = "hot";
+  $("#categoryTitle").html("What's Hot (Top 20)");
+ $(".categoryType_HOT").addClass("selectedCategoryType").siblings(".selectedCategoryType").removeClass("selectedCategoryType");
+}
+if(location.hash == "#wanted"){
+  _CURRENT_MESSAGE_TYPE = "wanted";
+  $("#categoryTitle").html("Most wanted items (Top 20)");
+ $(".categoryType_WANTED").addClass("selectedCategoryType").siblings(".selectedCategoryType").removeClass("selectedCategoryType");
+}
+if(location.hash == "#deals"){
+  _CURRENT_MESSAGE_TYPE = "deals";
+  $("#categoryTitle").html("Recent Deals (Top 20)");
+ $(".categoryType_DEALS").addClass("selectedCategoryType").siblings(".selectedCategoryType").removeClass("selectedCategoryType");
+}
+
+
+
+
+
+$(".categoryType").click(function(){
+  $(this).addClass("selectedCategoryType");
+  $(this).siblings(".selectedCategoryType").removeClass("selectedCategoryType");
+});
+
+$(".categoryType_HOT").click(function(){
+  _CURRENT_CATEGORY_TYPE = "hot";
+  load(_CURRENT_CATEGORY_TYPE);
+  $("#categoryTitle").html("What's Hot (Top 20)");
+});
+$(".categoryType_WANTED").click(function(){
+  _CURRENT_CATEGORY_TYPE = "wanted";
+  load(_CURRENT_CATEGORY_TYPE);
+  $("#categoryTitle").html("Most wanted items (Top 20)");
+});
+$(".categoryType_DEALS").click(function(){
+  _CURRENT_CATEGORY_TYPE = "deals";
+  load(_CURRENT_CATEGORY_TYPE);
+  $("#categoryTitle").html("Recent Deals (Top 20)");
+});
+
+
+
+
+
+var load = function(categoryType){
+
+  $(".loading_msg").show();
+  $(".itemListContainer").fadeTo("fast", 0.6);
+
+  $.ajax({
+    type: "POST",
+    url:  "/search/quickList",
+    dataType: "json",
+    data: {
+      type: categoryType
+    },
+    success: function(data){
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,item){
+        
+        if (item['endOfList'] == "True"){
+          toAppend = "<div class='resultNotFound' style='border:none;'>No result is found.</div>";
+          return;
+        }
+        
+        var message = (item['quantity']==0)?"Sold out":(item['quantity']==1)?"1 item left": (item['quantity']+" items left");
+        if(item['wishListCount']!="")
+          message = message + ". " + item['wishListCount'] + " wish" + ((Number(item['wishListCount']) >1)?"es":"");
+        
+        itemData = {
+          id: item['id'],
+          count: ++size,
+          title: item['title'],
+          description: item['description'],
+          imageUrl: item['imageUrl'],
+          markedPrice: item['markedPrice'],
+          quantity: item['quantity'],
+          viewCount: item['viewCount'],
+          wishListCount: item['wishListCount'],
+          owner: item['owner'],
+          amountMessage: message
+        };
+        
+        toAppend += $('#quicklistItemInfo').tmpl(itemData).html();
+        
+      });
+      
+      $(".itemListContainer").fadeTo("fast", 1).html( toAppend );
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".itemListContainer").fadeTo("fast", 1);
+    }
+  });
+};
+
+load(_CURRENT_CATEGORY_TYPE);
+
+</script>
+
+
+<script id="quicklistItemInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><a href="/item/${id}"><div class="itemBlock" >
+    <div class="itemBlockAttr itemBlockImage">
+      <img src="${imageUrl}" />
+    </div>
+    <div class="itemBlockAttr itemBlockInfoContainer">
+      <div class="itemBlockTitle">${title}</div>
+      <div class="itemBlockDescription">${description}</div>
+      <div class="itemBlockItemPrice">$ ${markedPrice}, ${amountMessage}</div>
+    </div>
+    <div style="position:absolute;top:4px;left:4px;font-size:0.8em;">${count}</div>
+  </div></a></div>
+  
+</script>
+
+
+
+
+{% endblock %}
+
+

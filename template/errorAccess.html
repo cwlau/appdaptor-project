@@ -1,0 +1,35 @@
+{% extends "template.html" %}
+{% block title %}
+  Error | Demo Shop
+{% endblock %}
+
+
+{% block canvas %}
+
+      <div class="errorContainer">
+      
+        <div class="errorMessage">
+        Sorry, you are not permitted to access this 
+        {% ifequal optionalInfo 'item' %}
+        Item
+        {% endifequal %}
+        {% ifequal optionalInfo 'user' %}
+        User
+        {% endifequal %}
+        {% ifequal optionalInfo 'message' %}
+        Conversation
+        {% endifequal %}
+        .
+        </div>
+      </div>
+
+{% endblock %}
+
+
+{% block bottomScript %}
+
+{% endblock %}
+
+
+
+

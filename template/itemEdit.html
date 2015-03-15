@@ -1,0 +1,462 @@
+{% extends "template.html" %}
+{% block title %}
+  {% ifequal optionalInfo2.action 'edit' %}
+  Edit Item - {{optionalInfo2.titleReadOnly}}
+  {% endifequal %}
+  {% ifnotequal optionalInfo2.action 'edit' %}
+  Add New Item
+  {% endifnotequal %} | Demo Shop
+{% endblock %}
+
+{% block includeStyle %}
+
+  <link rel="stylesheet" href="/style/closure/button.css" />
+  <link rel="stylesheet" href="/style/closure/dialog.css" />
+  <link rel="stylesheet" href="/style/closure/linkbutton.css" />
+  <link rel="stylesheet" href="/style/closure/menu.css">
+  <link rel="stylesheet" href="/style/closure/menuitem.css">
+  <link rel="stylesheet" href="/style/closure/menuseparator.css">
+  <link rel="stylesheet" href="/style/closure/tab.css" />
+  <link rel="stylesheet" href="/style/closure/tabbar.css" />
+  <link rel="stylesheet" href="/style/closure/toolbar.css" />
+  <link rel="stylesheet" href="/style/closure/colormenubutton.css" />
+  <link rel="stylesheet" href="/style/closure/palette.css" />
+  <link rel="stylesheet" href="/style/closure/colorpalette.css" />
+
+  <link rel="stylesheet" href="/style/closure/editor/bubble.css" />
+  <link rel="stylesheet" href="/style/closure/editor/dialog.css" />
+  <link rel="stylesheet" href="/style/closure/editor/linkdialog.css" />
+  <link rel="stylesheet" href="/style/closure/editortoolbar.css" />
+  
+{% endblock %}
+
+{% block includeScript %}
+  <script type="text/javascript" src="/script/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="/script/jquery-ui-1.10.0.autoComplete.min.js"></script>
+  <script type="text/javascript" src="/script/closure/base.js"></script>
+<!--
+  <script src="https://closure-library.googlecode.com/svn/trunk/closure/goog/base.js"></script>
+  -->
+  <script>
+    goog.require('goog.dom');
+    goog.require('goog.editor.Command');
+    goog.require('goog.editor.Field');
+    //goog.require('goog.editor.SeamlessField');
+    goog.require('goog.editor.plugins.BasicTextFormatter');
+    goog.require('goog.editor.plugins.EnterHandler');
+    goog.require('goog.editor.plugins.HeaderFormatter');
+    goog.require('goog.editor.plugins.LinkBubble');
+    goog.require('goog.editor.plugins.LinkDialogPlugin');
+    goog.require('goog.editor.plugins.ListTabHandler');
+    goog.require('goog.editor.plugins.LoremIpsum');
+    goog.require('goog.editor.plugins.RemoveFormatting');
+    goog.require('goog.editor.plugins.SpacesTabHandler');
+    goog.require('goog.editor.plugins.UndoRedo');
+    goog.require('goog.ui.editor.DefaultToolbar');
+    goog.require('goog.ui.editor.ToolbarController');
+  </script>
+{% endblock %}
+
+{% block canvas %}
+
+      <div class="addItemForm itemEditor">
+        <div class="addItemFormTitle">
+          {% ifequal optionalInfo2.action 'edit' %}
+          Edit item "{{optionalInfo2.titleReadOnly}}"
+          {% else %}
+          Add new item
+          {% endifequal %}  
+        </div>
+        <div class="itemDetails">
+          <div class="formAttr ">
+            <div class="formAttrDesc ">Title*:</div>
+            <div class="formAttrValue ">
+              <input type="text" id="formAttrValue_TITLE" autocomplete="false" 
+                {% ifequal optionalInfo2.action 'edit' %}
+                value="{{optionalInfo2.titleReadOnly}}"
+                {% endifequal %} /><span class="errorTips errorTips_TITLE"></span>
+            </div>
+          </div>
+          <div class="formAttr ">
+            <div class="formAttrDesc ">Description*:</div>
+            <div class="formAttrValue formAttrEditDescription">
+              <div id="toolbar"></div>
+              <div id="editMe"></div>
+            </div>
+          </div>
+          <div class="formAttr ">
+            <div class="formAttrDesc ">Price ($)*:</div>
+            <div class="formAttrValue ">
+              <input type="text" id="formAttrValue_PRICE"
+                {% ifequal optionalInfo2.action 'edit' %}
+                value="{{optionalInfo2.markedPrice}}"
+                {% endifequal %} /><span class="errorTips errorTips_PRICE"></span>
+            </div>
+          </div>
+          <div class="formAttr ">
+            <div class="formAttrDesc ">Quantity*:</div>
+            <div class="formAttrValue ">
+              <input type="text" id="formAttrValue_QUANTITY" autocomplete="false" 
+                {% ifequal optionalInfo2.action 'edit' %}
+                value="{{optionalInfo2.quantity}}"
+                {% endifequal %} /><span class="errorTips errorTips_QUANTITY"></span>
+            </div>
+          </div>
+          
+          
+          {% if optionalInfo2.expireIn|default:'180' < 0 %}<!-- published -->
+            <div class="formAttr ">
+              <div class="formAttrDesc ">Expiry Date*:</div>
+              <div class="formAttrValue ">
+                <input type="text" disabled="disabled" id="formAttrValue_EXPIRY_DATE" autocomplete="false" value="{{optionalInfo2.expiryDate|date:'Y-m-d H:i:s'}}"/><br/>
+                <span class="formTips">Each item has a default expiry date of up to {{ optionalInfo.ITEM_MAX_ACTIVEDAYS}} days.</span>
+              </div>
+            </div>
+          {% else %} <!-- draft -->
+            <div class="formAttr ">
+              <div class="formAttrDesc ">Expire In*:</div>
+              <div class="formAttrValue ">
+                <input type="text" id="formAttrValue_EXPIREIN" autocomplete="false" value="{{optionalInfo2.expiryIn|default:optionalInfo.ITEM_MAX_ACTIVEDAYS}}" />
+                <span style="display:inline-block;padding-top:5px;">days after date of publication</span><br/>
+                <span class="formTips">Each item has a default expiry date of up to {{ optionalInfo.ITEM_MAX_ACTIVEDAYS}} days.</span>
+                <span class="errorTips errorTips_EXPIREIN"></span>
+              </div>
+            </div>
+
+          {% endif %}
+          
+          
+          <div class="formAttr ">
+            <div class="formAttrDesc ">Privacy*:</div>
+            <div class="formAttrValue profileAttrStaticValue">
+              <input type="radio" name="itemPrivacy" value="Public" id="formPrivacy_PUBLIC" checked="checked"/><label for="formPrivacy_PUBLIC">Public</label>
+              <input type="radio" name="itemPrivacy" value="Student" id="formPrivacy_STUDENT" disabled="disabled"/><label for="formPrivacy_STUDENT">Student Only (Option not available yet)</label>
+              <!-- Select people who can see -->
+            </div>
+          </div>
+          
+          <form id="upload" method="post" action="" enctype="multipart/form-data" >
+            <div class="formAttr ">
+              <div class="formAttrDesc ">Profile Photo:</div>
+              <div class="formAttrValue profileAttrStaticValue">
+                <input type="hidden" name="itemId" id="itemIdHiddenInput" value="" />
+                <input type="hidden" name="actionType" id="actionTypeHiddenInput" value="" />
+                <input type="file" accept="image/*" class="itemProfileUpload" name="file" id="itemProfileUpload" onchange='saveSelectedFileList_profile(this.files);' /><br/>
+                <span class="formTips">
+                {% ifnotequal optionalInfo2.imageLinkUrl|default:'' '' %}
+                Select a photo to use a new one. Leave blank to keep the original.
+                {% else %} Select one photo for this item. {% endifnotequal %}</span>
+              </div>
+            </div>
+            <div class="formAttr n">
+              <div class="formAttrDesc ">Item Photo:</div>
+              <div class="formAttrValue profileAttrStaticValue">
+                Other photos for this item.
+              </div>
+            </div>
+            <div class="formAttr n">
+              <div class="formAttrDesc ">Item Video:</div>
+              <div class="formAttrValue profileAttrStaticValue">
+                Add video for this item.
+              </div>
+            </div>
+            <input type="submit" style="display:none;" class="submit" />
+          </form>
+          
+          <div class="addItemFormField addItemFormField_Submit">
+            <div class="formAttrDesc "></div>
+            <div class="formAttrValue">
+              {% ifequal optionalInfo2.action 'edit' %}
+              <span class="button linkButton editItemFormSubmitButton">Save Changes</span>
+              {% else %}
+              <span class="button linkButton addItemFormSubmitButton">Add Item</span>
+              {% endifequal %}
+              <span class="errorTips errorTips_SUMMARY"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+{% endblock %}
+
+
+
+
+
+{% block bottomScript %}
+<script type="text/javascript">
+
+var itemPrivacy = "Public";
+//$("#formPrivacy_PUBLIC").select(function(){itemPrivacy="Public";});
+//$("#formPrivacy_CUSTOM").select(function(){itemPrivacy="Custom";});
+
+var _item_min_price = {{ optionalInfo.ITEM_MIN_PRICE}};
+var _item_max_price = {{ optionalInfo.ITEM_MAX_PRICE}};
+var _item_min_quantity = {{ optionalInfo.ITEM_MIN_QUANTITY}};
+var _item_max_quantity = {{ optionalInfo.ITEM_MAX_QUANTITY}};
+var _item_min_activeDays = {{ optionalInfo.ITEM_MIN_ACTIVEDAYS}};
+var _item_max_activeDays = {{ optionalInfo.ITEM_MAX_ACTIVEDAYS}};
+
+var isFormSubmiting = false;
+
+
+var selectedFileList_profile = "";
+var saveSelectedFileList_profile = function(list){
+  selectedFileList_profile = list;
+};
+
+var validateItemForm = function(){
+  
+  // check each field before submitting to server side
+  var errorCount = 0;
+  $(".errorTips_TITLE").html("");
+  $(".errorTips_PRICE").html("");
+  $(".errorTips_EXPIREIN").html("");
+  $(".errorTips_QUANTITY").html("");
+  $(".errorTips_SUMMARY").html("");
+  
+  var title = $("#formAttrValue_TITLE").val();
+  if (title==""){
+    errorCount++;
+    $(".errorTips_TITLE").html("Title field cannot be blank.");
+    console.log("Title field cannot be blank.");
+  }
+  
+  var price = (Number($("#formAttrValue_PRICE").val())*100).toFixed(2);
+  console.log("price = " + price);
+  if (price < _item_min_price || price > _item_max_price){
+    errorCount++;
+    $(".errorTips_PRICE").html(" This value exceeds limit ("+ _item_min_price/100 +" - "+ _item_max_price/100 +")");
+    console.log("price exceed limit: price = " + price);
+  }else if(isNaN(price)){
+    errorCount++;
+    $(".errorTips_PRICE").html("Please enter a number.");
+  }
+  
+  {% ifnotequal optionalInfo2.action 'edit' %}
+    // for create item only!
+    var expireIn = parseInt((Number($("#formAttrValue_EXPIREIN").val())*1).toFixed(1));
+    console.log("expireIn = " + expireIn);
+    if (expireIn < _item_min_activeDays || expireIn > _item_max_activeDays){
+      errorCount++;
+      $(".errorTips_EXPIREIN").html(" This value exceeds limit ("+ _item_min_activeDays +" - "+ _item_max_activeDays +")");
+      console.log("expireIn exceed limit: expireIn = " + expireIn);
+    }else if(isNaN(expireIn)){
+      errorCount++;
+      $(".errorTips_EXPIREIN").html("Please enter a number.");
+    }
+  {% endifnotequal %}
+  
+  var quantity = parseInt((Number($("#formAttrValue_QUANTITY").val())*1).toFixed(1));
+  console.log("quantity = " + quantity);
+  if (quantity < _item_min_quantity || quantity > _item_max_quantity){
+    errorCount++;
+    $(".errorTips_QUANTITY").html(" This value exceeds limit ("+ _item_min_quantity +" - "+ _item_max_quantity +")");
+    console.log("quantity exceed limit: quantity = " + quantity);
+  }else if(isNaN(quantity)){
+    errorCount++;
+    $(".errorTips_QUANTITY").html("Please enter a number.");
+  }
+  
+  
+  
+  
+  if (errorCount>0){
+    $(".errorTips_SUMMARY").html("Please correct the form.");
+    return false;
+  } else {
+    return true;
+  }
+};
+
+$(".editItemFormSubmitButton").click(function(){
+
+  if (!validateItemForm()){
+    return;
+  }
+  
+  // prevent double submission from UI
+  if (isFormSubmiting){
+    return;
+  }
+  isFormSubmiting = true;
+  
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/user/editItem",
+    data: {
+      itemId: "{{optionalInfo2.id}}",
+      title: $("#formAttrValue_TITLE").val(),
+      description: fieldContent,
+      price: Math.round(Number($("#formAttrValue_PRICE").val())*100),
+      expiryDate: $("#formAttrValue_EXPIRYDATE").val(),
+      expireIn: $("#formAttrValue_EXPIREIN").val(),
+      quantity: $("#formAttrValue_QUANTITY").val(), //TODO: potential issue: quantity conflict
+      privacy: itemPrivacy
+      
+    },
+    success:function(xml){
+      var status = $("success",xml).text();
+      
+      if(status == "true"){
+        
+        if(selectedFileList_profile.length>0){
+          data = $("message",xml).text().split(",");
+          var itemId = data[0];
+          var uploadUrl = data[1];
+          
+          console.log(itemId);
+          console.log(uploadUrl);
+          
+          $("#upload").attr("action", uploadUrl);
+          $("#itemIdHiddenInput").val( itemId );
+          $("#actionTypeHiddenInput").val( "editItem" );
+          $(".submit").trigger("click");
+          
+        }else{
+          // no changes on profile photo
+          window.location.href="/item/{{ optionalInfo2.id }}?itemUpdated=true";
+        }
+      }else{
+        alert("Error occurred. Cannot save changes.");
+        $(".loading_msg").hide();
+        console.log(xml);
+      }
+      
+      isFormSubmiting = false;
+    },
+    error: function(){
+      alert("Error occur. Please submit changes later.");
+      isFormSubmiting = false;
+      $(".loading_msg").hide();
+    }
+  });
+});
+
+
+$(".addItemFormSubmitButton").click(function(){
+  if (!validateItemForm()){
+    return;
+  }
+  
+  // prevent double submission from UI
+  if (isFormSubmiting){
+    return;
+  }
+  isFormSubmiting = true;
+  
+  $(".loading_msg").show();
+  $.ajax({
+      type: "POST",
+      url:  "/user/addItem",
+      data: {
+        title: $("#formAttrValue_TITLE").val(),
+        description: fieldContent,
+        price: Math.round(Number($("#formAttrValue_PRICE").val())*100),
+        expireIn: $("#formAttrValue_EXPIREIN").val(),
+        quantity: $("#formAttrValue_QUANTITY").val(),
+        privacy: itemPrivacy
+        
+      },
+      success:function(xml){
+        var status = $("success",xml).text();
+        
+        if(status == "true"){
+          
+          // get new item id and upload link
+          data = $("message",xml).text().split(",");
+          var itemId = data[0];
+          var uploadUrl = data[1];
+          
+          console.log(itemId);
+          console.log(uploadUrl);
+          
+          if(selectedFileList_profile.length>0){
+            $("#upload").attr("action", uploadUrl);
+            $("#itemIdHiddenInput").val( itemId );
+            $("#actionTypeHiddenInput").val( "addItem" );
+            $(".submit").trigger("click");
+            
+          
+          }else{
+            // no changes on profile photo
+            window.location.href="/user/previewItem?itemId=" + itemId;
+          }
+          
+        }else{
+          alert("Error occurred. Cannot save changes.");
+          $(".loading_msg").hide();
+        }
+        
+        isFormSubmiting = false;
+      },
+      error: function(){
+        alert("Error occur. Please submit changes later.");
+        $(".loading_msg").hide();
+        isFormSubmiting = false;
+      }
+  });
+});
+
+
+// Create an editable SeamlessField.
+var myField = new goog.editor.Field('editMe');
+
+// User take risk. They cannot edit the item if they break it by themselves.
+var fieldContent = "{% ifequal optionalInfo2.action 'edit' %}{{optionalInfo2.description|removetags:'script'|safe}}{% endifequal %}";
+
+var saveFieldContents = function(){
+  fieldContent = myField.getCleanContents();
+};
+
+// Create and register all of the editing plugins you want to use.
+myField.registerPlugin(new goog.editor.plugins.BasicTextFormatter());
+myField.registerPlugin(new goog.editor.plugins.RemoveFormatting());
+myField.registerPlugin(new goog.editor.plugins.UndoRedo());
+myField.registerPlugin(new goog.editor.plugins.ListTabHandler());
+myField.registerPlugin(new goog.editor.plugins.SpacesTabHandler());
+myField.registerPlugin(new goog.editor.plugins.EnterHandler());
+myField.registerPlugin(new goog.editor.plugins.HeaderFormatter());
+myField.registerPlugin(new goog.editor.plugins.LoremIpsum('Click here to edit'));
+myField.registerPlugin(new goog.editor.plugins.LinkDialogPlugin());
+myField.registerPlugin(new goog.editor.plugins.LinkBubble());
+
+// Specify the buttons to add to the toolbar, using built in default buttons.
+var buttons = [
+  goog.editor.Command.UNDO,
+  goog.editor.Command.REDO,
+  goog.editor.Command.BOLD,
+  goog.editor.Command.ITALIC,
+  goog.editor.Command.UNDERLINE,
+  goog.editor.Command.FONT_COLOR,
+  goog.editor.Command.BACKGROUND_COLOR,
+  //goog.editor.Command.FONT_FACE,
+  goog.editor.Command.FONT_SIZE,
+  goog.editor.Command.LINK,
+  goog.editor.Command.UNORDERED_LIST,
+  goog.editor.Command.ORDERED_LIST,
+  goog.editor.Command.INDENT,
+  goog.editor.Command.OUTDENT,
+  goog.editor.Command.JUSTIFY_LEFT,
+  goog.editor.Command.JUSTIFY_CENTER,
+  goog.editor.Command.JUSTIFY_RIGHT,
+  goog.editor.Command.SUBSCRIPT,
+  goog.editor.Command.SUPERSCRIPT,
+  goog.editor.Command.STRIKE_THROUGH,
+  goog.editor.Command.REMOVE_FORMAT
+];
+var myToolbar = goog.ui.editor.DefaultToolbar.makeToolbar(buttons, goog.dom.getElement('toolbar'));
+
+// Hook the toolbar into the field.
+var myToolbarController = new goog.ui.editor.ToolbarController(myField, myToolbar);
+
+// Watch for field changes, to display below.
+goog.events.listen(myField, goog.editor.Field.EventType.DELAYEDCHANGE,
+    saveFieldContents);
+    
+myField.setHtml(false, fieldContent);
+myField.makeEditable();
+</script>
+{% endblock %}
+

@@ -1,0 +1,10 @@
+{% spaceless %}
+{
+  "success": "true",
+  "message": "",
+  "conversation_id": "{{ id }}"
+}
+{% endspaceless %}
+
+
+

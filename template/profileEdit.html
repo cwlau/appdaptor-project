@@ -1,0 +1,304 @@
+{% extends "template.html" %}
+{% block title %}
+  Edit Profile | Demo Shop
+{% endblock %}
+
+{% block includeStyle %}
+
+  <link rel="stylesheet" href="/style/closure/button.css" />
+  <link rel="stylesheet" href="/style/closure/dialog.css" />
+  <link rel="stylesheet" href="/style/closure/linkbutton.css" />
+  <link rel="stylesheet" href="/style/closure/menu.css">
+  <link rel="stylesheet" href="/style/closure/menuitem.css">
+  <link rel="stylesheet" href="/style/closure/menuseparator.css">
+  <link rel="stylesheet" href="/style/closure/tab.css" />
+  <link rel="stylesheet" href="/style/closure/tabbar.css" />
+  <link rel="stylesheet" href="/style/closure/toolbar.css" />
+  <link rel="stylesheet" href="/style/closure/colormenubutton.css" />
+  <link rel="stylesheet" href="/style/closure/palette.css" />
+  <link rel="stylesheet" href="/style/closure/colorpalette.css" />
+
+  <link rel="stylesheet" href="/style/closure/editor/bubble.css" />
+  <link rel="stylesheet" href="/style/closure/editor/dialog.css" />
+  <link rel="stylesheet" href="/style/closure/editor/linkdialog.css" />
+  <link rel="stylesheet" href="/style/closure/editortoolbar.css" />
+  
+{% endblock %}
+
+{% block includeScript %}
+  <script type="text/javascript" src="/script/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="/script/closure/base.js"></script>
+<!--
+  <script src="https://closure-library.googlecode.com/svn/trunk/closure/goog/base.js"></script>
+  -->
+  <script>
+    goog.require('goog.dom');
+    goog.require('goog.editor.Command');
+    goog.require('goog.editor.Field');
+    //goog.require('goog.editor.SeamlessField');
+    goog.require('goog.editor.plugins.BasicTextFormatter');
+    goog.require('goog.editor.plugins.EnterHandler');
+    goog.require('goog.editor.plugins.HeaderFormatter');
+    goog.require('goog.editor.plugins.LinkBubble');
+    goog.require('goog.editor.plugins.LinkDialogPlugin');
+    goog.require('goog.editor.plugins.ListTabHandler');
+    goog.require('goog.editor.plugins.LoremIpsum');
+    goog.require('goog.editor.plugins.RemoveFormatting');
+    goog.require('goog.editor.plugins.SpacesTabHandler');
+    goog.require('goog.editor.plugins.UndoRedo');
+    goog.require('goog.ui.editor.DefaultToolbar');
+    goog.require('goog.ui.editor.ToolbarController');
+  </script>
+{% endblock %}
+
+
+{% block canvas %}
+
+      <div class="profileViewer profileEditor">
+        {% ifnotequal userInfo.imageLinkUrl '' %}
+        <a href="{{ userInfo.imageLinkUrl }}" target="_blank">
+        {% endifnotequal %}
+        
+          <div class="profileImageDiv"><img src="{{ userInfo.imageUrl }}" /></div>
+        
+        {% ifnotequal userInfo.imageLinkUrl '' %}
+        </a>
+        {% endifnotequal %}
+        
+        <div class="profileTitle">
+          {% ifequal osInfo.query_string 'profileSetup' %}
+            Setup Profile > Edit Profile Content
+          {% else %}
+            {{userInfo.nickname}}'s Profile - Edit Profile
+          {% endifequal %}
+        </div>
+        
+        {% ifequal osInfo.query_string 'profileSetup' %}
+          <div class="formTips formStepTips">
+            Step 2 of 2
+          </div>
+        {% endifequal %}
+        
+        <div style="height:30px;"></div>
+        <div class="profileDetails">
+          <div class="profileAttr ">
+            <div class="profileAttrDesc ">Nickname:</div>
+            <div class="profileAttrValue profileAttrStaticValue"> {{userInfo.nickname}}</div>
+            <div class="profileAttrPrivacy profileAttrPrivacyNotEditable">
+            </div>
+          </div>
+          <div class="profileAttr ">
+            <div class="profileAttrDesc ">Name:</div>
+            <div class="profileAttrValue formAttrValue">
+              <input type="text" id="profileAttrValue_NAME" value="{{userInfo.name}}" />
+            </div>
+            <div class="profileAttrPrivacy profileAttrPrivacyEditable profileAttrPrivacy_PRIVATE">
+            </div>
+          </div>
+          <div class="profileAttr ">
+            <div class="profileAttrDesc ">Email: </div>
+            <div class="profileAttrValue profileAttrStaticValue"> {{userInfo.email}}</div>
+            <div class="profileAttrPrivacy profileAttrPrivacyEditable profileAttrPrivacy_PRIVATE">
+            </div>
+          </div>
+          <div class="profileAttr ">
+            <div class="profileAttrDesc ">Description: </div>
+            <div class="formAttrValue formAttrEditDescription">
+            
+              <div id="toolbar"></div>
+              <div id="editMe"></div>
+              
+              
+            </div>
+            <div class="profileAttrPrivacy profileAttrPrivacyNotEditable">
+              
+            </div>
+          </div>
+          <form id="upload" method="post" action="" enctype="multipart/form-data" >
+            <div class="profileAttr ">
+              <div class="profileAttrDesc ">Profile Photo:</div>
+              <div class="profileAttrValue profileAttrStaticValue">
+                <input type="file" accept="image/*" class="accountProfilePicUpload" name="file" onchange='saveSelectedFileList_profile(this.files);' /><br/>
+                <span class="formTips">Select one photo for your profile.</span>
+              </div>
+              <div class="profileAttrPrivacy profileAttrPrivacyNotEditable"></div>
+            </div>
+            <input type="submit" style="display:none;" class="submit" />
+          </form>
+          <div class="formAttr ">
+            <div class="profileAttrDesc ">Are you a student?</div>
+            <div class="profileAttrValue profileAttrStaticValue">
+              {% ifequal userInfo.isStudent 'true' %}
+              <div class="profileAttrValue profileAttrStaticValue">Verified, student identity will expire on {{ userInfo.isStudentUntil|date:"Y-m-d" }}</div>
+              {% else %}
+              
+              <div class="profileAttrValue profileAttrStaticValue">Not yet verified</div>
+              <span class="formTips">To verify your account, send an email to <a href="mailto:verify-student@{{osInfo.application_id}}.appspotmail.com">verify-student@{{osInfo.application_id}}.appspotmail.com</a> 
+                from your student email account (Format: *@*.edu.*), with subject "<b>VERIFY STUDENT ACCOUNT: {{userInfo.nickname}}</b>".</span>
+              {% endifequal %}
+            </div>
+          </div>
+          
+          <div class="formAttr ">
+            <div class="formAttrDesc "></div>
+            <div class="formAttrValue profileAttrStaticValue">
+              <span class="button linkButton saveProfileChangeButton">Save Changes</span>
+            </div>
+          </div>
+          
+          <!--
+          <div class="profileAttr n">
+            <span class="button linkButton editProfilePreviewButton">Preview Changes</span> 
+            <span class="button linkButton saveProfileChangeButton">Save Changes</span>
+          </div>
+          -->
+        </div>
+      </div>
+      
+      
+{% endblock %}
+
+
+{% block bottomScript %}
+<script type="text/javascript">
+
+var isFormSubmiting = false;
+var selectedFileList_profile = "";
+var saveSelectedFileList_profile = function(list){
+  selectedFileList_profile = list;
+};
+
+
+
+$(".saveProfileChangeButton").click(function(){
+  
+  // prevent double submission from UI
+  if (isFormSubmiting){
+    return;
+  }
+  isFormSubmiting = true;
+  
+  
+  $(".loading_msg").show();
+  $.ajax({
+      type: "POST",
+      url:  "/user/editProfile",
+      data: {
+        name: $("#profileAttrValue_NAME").val(),
+        description: fieldContent
+      },
+      success:function(xml){
+        var status = $("success",xml).text();
+        
+        if(status == "true"){
+          if(selectedFileList_profile.length>0){
+            uploadUrl = $("message",xml).text();
+            console.log(uploadUrl);
+            
+            $("#upload").attr("action", uploadUrl);
+            $(".submit").trigger("click");
+            
+          }else{
+            // no changes on profile photo
+            window.location.href="/user/myProfile?profileUpdated";
+          }
+        }else{
+          alert("Error occurred. Cannot save changes.");
+          $(".loading_msg").hide();
+          console.log(xml);
+        }
+        
+        isFormSubmiting = false;
+        
+      },
+      error: function(){
+        alert("Error occurred. Cannot save changes.");
+        isFormSubmiting = false;
+      }
+  });
+});
+
+
+$(".profileAttrPrivacy_PUBLIC").hover(function(){
+  $(this).append("<div class='profileAttrPrivacyStatus'>Public</div>");
+}, function(){
+  $(".profileAttrPrivacyStatus").remove();
+});
+
+$(".profileAttrPrivacy_PRIVATE").hover(function(){
+  $(this).append("<div class='profileAttrPrivacyStatus'>Private by default</div>");
+}, function(){
+  $(".profileAttrPrivacyStatus").remove();
+});
+
+// always public.
+$(".profileAttrPrivacyNotEditable").hover(function(){
+  $(this).append("<div class='profileAttrPrivacyStatus'>Public by default</div>");
+}, function(){
+  $(".profileAttrPrivacyStatus").remove();
+});
+
+
+// Create an editable SeamlessField.
+var myField = new goog.editor.Field('editMe');
+
+// User take risk. They cannot edit the profile if they break it by themselves.
+var fieldContent = "{{userInfo.description|removetags:'script'|safe}}";
+
+var saveFieldContents = function(){
+  fieldContent = myField.getCleanContents();
+};
+
+// Create and register all of the editing plugins you want to use.
+myField.registerPlugin(new goog.editor.plugins.BasicTextFormatter());
+myField.registerPlugin(new goog.editor.plugins.RemoveFormatting());
+myField.registerPlugin(new goog.editor.plugins.UndoRedo());
+myField.registerPlugin(new goog.editor.plugins.ListTabHandler());
+myField.registerPlugin(new goog.editor.plugins.SpacesTabHandler());
+myField.registerPlugin(new goog.editor.plugins.EnterHandler());
+myField.registerPlugin(new goog.editor.plugins.HeaderFormatter());
+myField.registerPlugin(new goog.editor.plugins.LoremIpsum('Click here to edit'));
+myField.registerPlugin(new goog.editor.plugins.LinkDialogPlugin());
+myField.registerPlugin(new goog.editor.plugins.LinkBubble());
+
+// Specify the buttons to add to the toolbar, using built in default buttons.
+var buttons = [
+  goog.editor.Command.UNDO,
+  goog.editor.Command.REDO,
+  goog.editor.Command.BOLD,
+  goog.editor.Command.ITALIC,
+  goog.editor.Command.UNDERLINE,
+  goog.editor.Command.FONT_COLOR,
+  goog.editor.Command.BACKGROUND_COLOR,
+  //goog.editor.Command.FONT_FACE,
+  goog.editor.Command.FONT_SIZE,
+  goog.editor.Command.LINK,
+  goog.editor.Command.UNORDERED_LIST,
+  goog.editor.Command.ORDERED_LIST,
+  goog.editor.Command.INDENT,
+  goog.editor.Command.OUTDENT,
+  goog.editor.Command.JUSTIFY_LEFT,
+  goog.editor.Command.JUSTIFY_CENTER,
+  goog.editor.Command.JUSTIFY_RIGHT,
+  goog.editor.Command.SUBSCRIPT,
+  goog.editor.Command.SUPERSCRIPT,
+  goog.editor.Command.STRIKE_THROUGH,
+  goog.editor.Command.REMOVE_FORMAT
+];
+var myToolbar = goog.ui.editor.DefaultToolbar.makeToolbar(buttons, goog.dom.getElement('toolbar'));
+
+// Hook the toolbar into the field.
+var myToolbarController = new goog.ui.editor.ToolbarController(myField, myToolbar);
+
+// Watch for field changes, to display below.
+goog.events.listen(myField, goog.editor.Field.EventType.DELAYEDCHANGE,
+    saveFieldContents);
+    
+myField.setHtml(false, fieldContent);
+myField.makeEditable();
+</script>
+{% endblock %}
+
+
+
+

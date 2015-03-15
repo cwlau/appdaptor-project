@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta name="author" content="cwlau" />
+  <link rel="stylesheet" href="/style/layout.css" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  <!--
+  <link href='http://fonts.googleapis.com/css?family=Merienda+One' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+  -->
+  
+  <title>{% block title %}Home | Demo Shop{% endblock %}</title>
+  
+{% block includeStyle %}
+<link href='/style/jquery-ui-1.10.0.autocomplete.min.css' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+{% block includeScript %}
+<script type="text/javascript" src="/script/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/script/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="/script/jquery-ui-1.10.0.autoComplete.min.js"></script>
+{% endblock %}
+
+</head>
+<body>
+
+<div class="loading_msg">
+  Loading
+</div>
+
+<div class='main top_div'><div class='stdWidth'>
+  <div class="title titleleft titletopleft"><a href="/" title="Demo Shop">
+    <ul>
+      <li><img src="/image/shop_48.png" style="width:40px;" /></li>
+      <li><span class="titleText">Demo Shop</span></li>
+    </ul>
+  </a></div>
+  <div class="titleright titletopright">{% spaceless %}
+          {% if userInfo %}
+            {{ userInfo.nickname }}
+            {% ifnotequal userType 'visitor' %}<!--({{userInfo.email}}) -->{% endifnotequal %}
+            | 
+              {% if userInfo.unreadCount|default:0 > 0 %}
+                <span class="messageLink hasUnreadMessage"><a href="/message/">Messages</a>
+                  (<span class="unreadCount">{{ userInfo.unreadCount }}</span>)</span>
+              {% else %}
+                <a href="/message/">Messages</a> (0)
+              {% endif %}
+            |
+            {% ifequal userType 'admin' %}
+            <a href="/admin/" >Admin Console</a> |
+            {% endifequal %}
+            <a href="{{url.signout}}" >Sign Out</a>
+          {% else %}
+            Welcome, Guest | <a href="{{url.signin}}" >Sign In</a>
+          {% endif %}{% endspaceless %}</div>
+</div></div>
+
+
+<div class="body"><!-- start .body -->
+
+  <div class="nav barStyle"><div class="nav-inner stdWidth">
+    <ul class="heading">
+      <a href="/"><li class="bar_home">Home</li></a>
+      <a href="/new"><li class="bar_new">What's New</li></a>
+      <a href="/trends"><li class="bar_trends">Trends</li></a>
+      <a href="/search/"><li class="bar_search">Search</li></a>
+      <!-- TODO generate recent search history -->
+      <li class="n">List 1</li>
+      <li class="createList n">Create List</li>
+    </ul>
+              {% if is_user %}
+              
+              {% endif %}
+    <ul class="heading_right ">
+    {% if userInfo %}
+      <a href="/user/settings/"><li>Account Settings <span class="arrow n"></span></li></a>
+      <!--<a href="/support/"><li>Help</li></a>-->
+      <a href="/user/addItem"><li>+ Add Item</li></a>
+    {% endif %}
+    </ul>
+  </div></div>
+  
+  {{ message|safe }}
+  
+  <div class='errorNotice'><div>Error occurred while retrieving data. Please reload page to retry.</div></div>
+  
+  {% ifequal userType 'visitor' %}
+  
+  {% block pickNicknameNotice %}
+  <div class="notice">
+    <div>
+      Nice to meet you here, {{ userInfo.nickname }}!<br/>
+      Please <a href="/user/settings/nickname">setup your profile</a> to start posting new items.
+    </div>
+  </div>
+  {% endblock %}
+  
+  {% endifequal %}
+  
+  <div class="shopCanvas stdWidth">
+    <div class="shopCanvasMainContainer">
+    {% block canvas %}
+    
+    {% endblock %}
+    </div>
+    
+    
+    
+    <div class="shopCanvasModuleContainer">
+    
+    {% if loggedIn %}
+      <div class="userProfileModule">
+        <div class="profileImageContainer"><img src="{{ userInfo.imageUrl }}" style="width:40px;" /></div>
+        <div class="profileInfoContainer">
+          <div>
+            <span class="profileNickname">{% ifequal userType 'visitor' %}Visitor{% else %}{{userInfo.nickname}}{% endifequal %}</span>
+            <br/>
+            <span class="profileEmail">{{userInfo.email}}</span>
+          </div>
+          <div class="profileSubInfoContainer">
+            <span class="profileWishList n">My Items: 
+              <span class="profileWishListItemCount">{{userInfo.itemCount}} item{{userInfo.itemCount|pluralize}}</span>
+            <br/>
+            </span>
+            <span class="profileWishList n">Wish List: 
+              <span class="profileWishListItemCount">{{userInfo.wishCount}} item{{userInfo.wishCount|pluralize}}</span>
+            <br/>
+            </span>
+            {% block accountModuleLinks %}
+            {% ifequal userType 'visitor' %}
+            <a href="/user/settings/nickname" ><span class="button pickNicknameButton">Setup my profile</span></a>
+            {% else %}
+            <a href="/user/myProfile" ><span class="button editProfileButton">My Profile</span></a>
+            <a href="/user/addItem" ><span class="button addItemButton">+ Add Item</span></a>
+            <a href="/search/?type=myItem" ><span class="button editProfileButton">My Item{{userInfo.itemCount|pluralize}} ({{userInfo.itemCount}})</span></a>
+            <a href="/search/?type=myWishlist" ><span class="button editProfileButton">Wishlist ({{userInfo.wishCount}})</span></a>
+            {% endifequal %}
+            {% endblock %}
+          </div>
+        </div>
+        
+        <div class="profileButtons"></div>
+      </div>
+      
+    {% else %}
+    
+      <div class="userProfileModule">
+        <div class="profileImageContainer"><img src="/image/shop_48.png" style="width:40px;" /></div>
+        <div class="profileInfoContainer profileNotLoggedInAdjust">
+          <div>
+            <span class="profileNickname">You are not signed in.</span>
+            <br/>
+            <span class="profileEmail"></span>
+          </div>
+          <div class="profileSubInfoContainer">
+            <a href="{{url.signin}}" ><span class="button signinButton">Sign in with Google Account</span></a>
+          </div>
+        </div>
+        
+        <div class="profileButtons"></div>
+      </div>
+    
+    {% endif %}
+    
+      {% block requestAlertModule %}
+        {% if userInfo.requestCount > 0 %}
+        <div class="moduleStyle moduleStyleSharp">
+          <div class="moduleBarStyle barStyle messageAlert">
+            You have {{ userInfo.requestCount }} pending request{{ userInfo.requestCount|pluralize }}
+          </div>
+          <div class="moduleContentStyle">
+            <a href="/message/#request">View All Pending Requests</a>
+          </div>
+        </div>
+        
+        {% endif %}
+      {% endblock %}
+      
+      
+      {% block messageAlertModule %}
+        {% if userInfo.unreadCount > 0 %}
+        <div class="moduleStyle moduleStyleSharp">
+          <div class="moduleBarStyle barStyle messageAlert">
+            You have {{ userInfo.unreadCount }} unread message{{ userInfo.unreadCount|pluralize }}
+          </div>
+          <div class="moduleContentStyle">
+            <a href="/message/#unread">View My Messages</a>
+          </div>
+        </div>
+        
+        {% endif %}
+      {% endblock %}
+      
+      {% block searchModule %}
+      <div class="moduleStyle">
+        <div class="moduleBarStyle barStyle">
+          Find an item
+        </div>
+        <div class="moduleContentStyle">
+          <input type="text" id="moduleSearchInput" placeholder="Enter keyword here" /><span class="button linkButton moduleSearchButton">Search</span>
+        </div>
+      </div>
+      
+      <script>
+      $(".moduleSearchButton").click(function(){
+        callSearch($("#moduleSearchInput").val() );
+      });
+      $("#moduleSearchInput").live("keyup", function(e){
+        if(e.keyCode == 13){$(".moduleSearchButton").trigger("click");}
+      });
+
+      var callSearch = function(keyword){
+         location.href = "/search/?query="+keyword;
+      };
+      </script>
+      {% endblock %}
+      
+      
+      {% block messageThreadModule %}
+      
+      {% endblock %}
+      
+    </div>
+  </div>
+  
+  
+
+{% autoescape off %}
+{% endautoescape %}
+
+
+</div><!-- end .body -->
+
+
+
+<div class="footerArea">
+  <div class="trans_bar"></div>
+  <div class="footerAreaInner stdWidth">
+    <div class="footerRight">Powered by Google App Engine</div>
+    <div>&#169; 2013 Demo Shop | Hardcode 2013 - Appdaptor</div>
+  </div>
+</div>
+
+
+{% block bottomMainScript %}
+<script type="text/javascript">
+var _LOGGED_IN = "{{ loggedIn }}";
+var _USERTYPE = "{{ userType }}";
+var _HTTP_HOST = "{{ osInfo.http_host }}";
+var _MY_ACCOUNT_NICKNAME = "{{ userInfo.nickname }}";
+var _MY_ACCOUNT_PROFILEPIC = "{{ userInfo.imageUrl }}";
+var _GENERAL_ERROR = "Error occurred. Please try again later.";
+
+</script>
+
+<script type="text/javascript" src="/script/main.js"></script>
+{% endblock %}
+
+
+
+
+{% block bottomScript %}
+{% endblock %}
+
+
+
+
+
+{% block analyticsScript %}
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-451724-25']);
+  _gaq.push(['_setDomainName', 'hardcode-appdaptor.appspot.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+{% endblock %}
+</body>
+</html>

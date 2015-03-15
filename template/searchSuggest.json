@@ -1,0 +1,11 @@
+{% spaceless %}
+[
+{% for itemInfo in items %}  {% ifnotequal itemInfo.noComma 'true' %},{% endifnotequal %}{
+    "id": "{{ itemInfo.id }}",
+    "label": "{{ itemInfo.title }}",
+    "owner": "{{ itemInfo.owner }}"
+  }
+{% endfor %}
+]
+
+{% endspaceless %}

@@ -1,0 +1,9 @@
+cron:
+- description: Check expired ShopItem
+  url: /cron/checkExpiredShopItem
+  schedule: every day 00:00
+
+- description: Check expired Student Account
+  url: /cron/checkExpiredStudentAccount
+  schedule: every day 00:05
+  

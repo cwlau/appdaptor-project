@@ -1,0 +1,180 @@
+{% extends "adminTemplate.html" %}
+{% block title %}
+  Item Management - Admin Console | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+<style>
+.bar_item{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+
+<div class="adminMangement">
+
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>Search Items</div>
+      
+      <div class="adminMangement_adminListTitleSearchTool adminMangement_adminListTitleSearchToolForId">
+        Item ID: <input type="text" class="searchIdInput" id="searchItemIDInput" placeholder="Item ID" />
+        <span class="button linkButton searchItemByID">Search</span>
+      </div>
+      <div class="adminMangement_adminListTitleSearchTool ">
+        Item owner: <input type="text" id="searchItemInput" placeholder="Owner Nickname" />
+        <span class="button linkButton searchItem">Search</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="itemId">Item ID</div>
+      <div class="itemName">Item Name</div>
+      <div class="itemOwner">Item Owner</div>
+      <div class="viewCount">View Count</div>
+      <div class="status">Status</div>
+      <div class="itemTool">Item Tools</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent">
+    
+        <div class='resultNotFound'>Enter value above to search for items.</div>
+    
+    </div>
+  </div>
+</div>
+      
+
+{% endblock %}
+
+
+{% block includeStyle %}
+<link href='/style/jquery-ui-1.10.0.autocomplete.min.css' rel='stylesheet' type='text/css'>
+<link href='/style/admin.css' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+{% block bottomScript %}
+
+<script>
+$(".searchItem").live("click", function(){
+  search("nickname", $("#searchItemInput").val() );
+});
+$("#searchItemInput").live("keyup", function(e){
+  if(e.keyCode == 13){$(".searchItem").trigger("click");}
+});
+$(".searchItemByID").live("click", function(){
+  search("id", $("#searchItemIDInput").val() );
+});
+$("#searchItemIDInput").live("keyup", function(e){
+  if(e.keyCode == 13){$(".searchItemByID").trigger("click");}
+});
+
+var search = function(type, value){
+  $(".adminMangement_adminListContent").fadeTo("fast", 0.6);
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/itemList",
+    dataType: "json",
+    data: {"type": type, "value": value},
+    success: function(data){
+      if (data[0].success== 'false'){
+        $(".loading_msg").hide();
+        toAppend = "<div class='resultNotFound'>No result is found.</div>";
+        $(".adminMangement_adminListContent").html( toAppend ).fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+      var toAppend = "";
+      
+      $.each(data, function(i,item){
+        itemData = {
+          id: item['id'],
+          name: item['name'],
+          owner: item['owner'],
+          viewCount: item['viewCount'],
+          status: item['status']
+        };
+        toAppend += $('#accountInfo').tmpl(itemData).html();
+        
+        if(item['endOfList']=="True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+      });
+      
+      $(".adminMangement_adminListContent").html( toAppend );
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+    }
+  });
+};
+
+
+$(".deleteItemByAdmin").live("click", function(){
+  deleteItem( $(this).data("itemid") );
+  $(this).addClass("toBeRemoved");
+});
+
+var deleteItem = function( itemId ){
+  
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/deleteItem",
+    dataType: "json",
+    data: {"value": itemId},
+    success: function(data){
+      if (data[0].success== 'false'){
+        $(".loading_msg").hide();
+        return;
+      }
+      
+      $(".loading_msg").hide();
+      
+      $(".toBeRemoved").fadeOut();
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+    }
+  });
+};
+
+</script>
+
+
+<script id="accountInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+      <a href="/item/${id}" target="_blank">
+        <div class="itemId">${id}</div>
+        <div class="itemName">${name}</div>
+      </a>
+      <a href="/profile/${owner}" target="_blank">
+        <div class="itemOwner">${owner}</div>
+      </a>
+      
+      <div class="viewCount">${viewCount}</div>
+      <div class="status">${status}</div>
+      
+      <div class="itemTool">
+        <span class="deleteItemByAdmin" data-itemid="${id}">Delete item</span>
+      </div>
+      
+  </div></div>
+  
+  
+</script>
+
+{% endblock %}
+
+
+
+

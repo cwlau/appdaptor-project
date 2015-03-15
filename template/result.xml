@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<response>
+<success>{{ success }}</success>
+<message>{{ message }}</message>
+</response>
+

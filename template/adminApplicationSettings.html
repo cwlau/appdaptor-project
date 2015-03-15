@@ -1,0 +1,768 @@
+{% extends "adminTemplate.html" %}
+{% block title %}
+  Application Settings - Admin Console | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+<style>
+.bar_appSettings{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+
+<div class="adminMangement">
+
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>Environment Variables</div>
+      
+      <div class="adminMangement_adminListTitleSearchTool" style="width:500px;">
+        <span class="button linkButton envSaveButton button-disabled">No changes detected</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="env_varName">Variable Name</div>
+      <div class="env_description">Description</div>
+      <div class="env_value">Value</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent">
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">item_max_activeDays</div>
+        <div class="env_description">Maximum number of days item can stay Active after publication</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.item_max_activeDays }}" class="env_input" data-refkey="item_max_activeDays" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">item_min_activeDays</div>
+        <div class="env_description">Minimum number of days item can stay Active after publication</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.item_min_activeDays }}" class="env_input" data-refkey="item_min_activeDays" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">item_max_price</div>
+        <div class="env_description">Maximum price for a Shop Item (Dollar)</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.item_max_price }}" class="env_input" data-refkey="item_max_price" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">item_min_price</div>
+        <div class="env_description">Minimum price for a Shop Item (Dollar)</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.item_min_price }}" class="env_input" data-refkey="item_min_price" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">item_max_quantity</div>
+        <div class="env_description">Maximum quantity for a Shop Item</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.item_max_quantity }}" class="env_input" data-refkey="item_max_quantity" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">item_min_quantity</div>
+        <div class="env_description">Minimum quantity for a Shop Item</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.item_min_quantity }}" class="env_input" data-refkey="item_min_quantity" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">nickname_max_chars</div>
+        <div class="env_description">Maximum length for a valid nickname</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.nickname_max_chars }}" class="env_input" data-refkey="nickname_max_chars" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">nickname_min_chars</div>
+        <div class="env_description">Minimum length for a valid nickname</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.nickname_min_chars }}" class="env_input" data-refkey="nickname_min_chars" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">item_expire_alert_daysBefore</div>
+        <div class="env_description">Number of days before an item expires, the system generates alert messages to notify users.</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.item_expire_alert_daysBefore }}" class="env_input" data-refkey="item_expire_alert_daysBefore" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">search_result_length</div>
+        <div class="env_description">Number of results to be returned at a time. Applied for search result and suggestion.</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.search_result_length }}" class="env_input" data-refkey="search_result_length" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="env_varName">conversation_group_size</div>
+        <div class="env_description">Maximum number of users allowed in a conversation</div>
+        <div class="env_value env_value_editable">
+          <input type="text" value="{{ optionalInfo.conversation_group_size }}" class="env_input" data-refkey="conversation_group_size" />
+        </div>
+      </div>
+      
+      
+      <div class="adminMangement_adminDetail n">
+        <div class="env_varName">Variable Name</div>
+        <div class="env_description">Description</div>
+        <div class="env_value">Value</div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>API (Allowing Partners to access data here)</div>
+      
+      <div class="adminMangement_adminListTitleSearchTool" style="width:600px;">
+        <input type="text" id="addOwnApiDomainInput" placeholder="Domain" value="" />
+        <input type="text" id="addOwnApiKeyInput" placeholder="Key" value="" />
+        <input type="text" id="addOwnApiRemarksInput" placeholder="Remarks" value="" />
+        <span class="button linkButton addOwnApiButton">Add</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="api_keyId">ID</div>
+      <div class="api_domain">Domain (reference only)</div>
+      <div class="api_key">Key</div>
+      <div class="api_remarks">Remarks</div>
+      <div class="api_tool">Tool</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent adminMangement_adminListOwnApplicationAPI">
+      
+      <!-- return result here. retrieve from memcache -->
+      <!-- For own application -->
+      <!--
+      <div class="adminMangement_adminDetail">
+        <div class="api_keyId">ID</div>
+        <div class="api_domain">Domain</div>
+        <div class="api_key">Key</div>
+        <div class="api_remarks">Remarks</div>
+        <div class="api_tool">Tool</div>
+      </div>
+      -->
+      
+    </div>
+  </div>
+  
+  
+  
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>API (Access data from partner applications)</div>
+      
+      <div class="adminMangement_adminListTitleSearchTool" style="width:600px;">
+        <input type="text" id="addApiDomainInput" placeholder="Domain" value="" />
+        <input type="text" id="addApiKeyInput" placeholder="Key" value="" />
+        <input type="text" id="addApiRemarksInput" placeholder="Remarks" value="" />
+        <span class="button linkButton addPartnerApiButton">Add</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="api_keyId">ID</div>
+      <div class="api_domain">Domain</div>
+      <div class="api_key">Key</div>
+      <div class="api_remarks">Remarks</div>
+      <div class="api_tool">Tool</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent adminMangement_adminListContentAPI">
+      
+      <!--
+      <div class="adminMangement_adminDetail">
+        <div class="api_keyId">ID</div>
+        <div class="api_domain">Domain</div>
+        <div class="api_key">Key</div>
+        <div class="api_remarks">Remarks</div>
+        <div class="api_tool">Tool</div>
+      </div>
+      -->
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>Restricted Account Nicknames</div>
+      
+      <div class="adminMangement_adminListTitleSearchTool" style="width:500px;">
+        <input type="text" id="addBlockedNicknameInput" placeholder="Nickname" value="" />
+        <input type="text" id="addBlockedNicknameRemarksInput" placeholder="Remarks" value="" />
+        <span class="button linkButton addBlockedNicknameButton">Add</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="env_restrictedNicknameType">Type</div>
+      <div class="env_restrictedNicknameValue">Value</div>
+      <div class="env_restrictedNicknameRemarks">Remarks</div>
+      <div class="env_restrictedNicknameTool">Tool</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent adminMangement_adminListContentRestrictedNickname">
+      
+      <!--
+      <div class="adminMangement_adminDetail">
+        <div class="env_restrictedNicknameType">system_default</div>
+        <div class="env_restrictedNicknameValue">admin</div>
+        <div class="env_restrictedNicknameRemarks"></div>
+        <div class="env_restrictedNicknameTool"></div>
+      </div>
+      -->
+      
+    </div>
+  </div>
+  
+  
+  <div class="adminMangement_adminList" >
+    <div class="adminMangement_adminListTitle">
+      <div>Cron Job</div>
+      
+      <div class="adminMangement_adminListTitleSearchTool" style="width:500px;">
+        <span class="button linkButton cronSaveButton button-disabled">No changes detected</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="jobName">Cron Job/ Description</div>
+      <div class="jobEnable">Enable</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent">
+      
+      <!-- Add the cron job list manually -->
+      
+      <div class="adminMangement_adminDetail">
+        <div class="jobName">
+          <div class="jobTitle">Shop Item - Expiry date checker</div>
+          Check item expiry date, send reminder before expiry date/ after item expires.<br/>
+          <span style="color:#bbb">/cron/checkExpiredShopItem</span>
+        </div>
+        <div class="jobEnable">
+          <input type="checkbox" {% ifequal optionalInfo.cron_item_expiryDateChecker '1' %}checked="checked"{% else %}{% endifequal %} data-refkey="cron_item_expiryDateChecker" />
+        </div>
+      </div>
+      
+      <div class="adminMangement_adminDetail">
+        <div class="jobName">
+          <div class="jobTitle">Account - Student identity checker</div>
+          Check student identity - expires after 365 days of validation.<br/>
+          <span style="color:#bbb">/cron/checkExpiredStudentAccount</span>
+        </div>
+        <div class="jobEnable">
+          <input type="checkbox" {% ifequal optionalInfo.cron_account_expiryDateChecker '1' %}checked="checked"{% else %}{% endifequal %} data-refkey="cron_account_expiryDateChecker" />
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+</div>
+
+{% endblock %}
+
+
+
+
+{% block includeStyle %}
+<link href='/style/admin.css' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+
+{% block bottomScript %}
+<script>
+var originalValue = "";
+$(".env_value_editable input").focus(function(){
+  originalValue = $(this).val();
+});
+$(".env_value_editable input").blur(function(){
+  if (originalValue == $(this).val()){
+    return;
+  }
+  
+  if(isNaN($(this).val())){
+    $(this).addClass("env_input_edited").addClass("env_input_error");
+    alert("Error occurred. Please enter a number.");
+    return;
+  }else{
+    $(this).removeClass("env_input_error");
+  }
+  
+  var refkey = $(this).data("refkey");
+  var val = $(this).val();
+  $(this).addClass("env_input_edited");
+  $(".loading_msg").show();
+  $(".envSaveButton").html("Saving changes");
+  
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateAppSettings",
+    dataType: "json",
+    data: {type: 'env', name: refkey, value: val},
+    success: function(data){
+      if (data[0]!=null && data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".envSaveButton").html("Changes not saved");
+        return;
+      }
+      
+      $(".envSaveButton").html("Changes automatically saved");
+      
+      $(".loading_msg").hide();
+      $(".env_input_edited").removeClass("env_input_edited");
+    },
+    error: function(){
+      $(".loading_msg").hide();
+    }
+  });
+});
+
+$(".jobEnable input").change(function(){
+  if (originalValue == $(this).attr("checked")){
+    return;
+  }
+  var refkey = $(this).data("refkey");
+  var val = $(this).attr("checked")==null ? 0 : 1;
+  
+  $(".loading_msg").show();
+  $(".cronSaveButton").html("Saving changes");
+  
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateAppSettings",
+    dataType: "json",
+    data: {type: 'cron', name: refkey, value: val},
+    success: function(data){
+      if (data[0]!=null && data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".cronSaveButton").html("Changes not saved");
+        return;
+      }
+      
+      $(".cronSaveButton").html("Changes automatically saved");
+      
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+    }
+  });
+});
+
+var getRestrictedNicknameList = function(){
+  $(".adminMangement_adminListContentRestrictedNickname").fadeTo("fast", 0.6);
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/restrictedNicknameList",
+    dataType: "json",
+    data: { },
+    success: function(data){
+      if (data[0].status == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".adminMangement_adminListContentRestrictedNickname").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".adminMangement_adminListContentRestrictedNickname").fadeTo("fast", 1);
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,nickname){
+      
+        if (size == 0 && nickname['endOfList'] == "True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+        if (nickname['endOfList'] == "True"){
+          return;
+        }
+        
+        nicknameData = {
+          type: nickname['type'],
+          value: nickname['value'],
+          remarks: nickname['remarks']
+        };
+        
+        if (nickname['type'] == "system_default")
+          toAppend += $('#nicknameSystemDefault').tmpl(nicknameData).html();
+        else
+          toAppend += $('#nicknameRestricted').tmpl(nicknameData).html();
+          
+        size++;
+      });
+      
+      $(".adminMangement_adminListContentRestrictedNickname").html( toAppend );
+      
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContentRestrictedNickname").fadeTo("fast", 1);
+    }
+  });
+};
+
+getRestrictedNicknameList();
+
+
+
+$(".addBlockedNicknameButton").click(function(){
+
+  if ($("#addBlockedNicknameInput").val()==null){
+    alert("nickname field cannot be null");
+    return;
+  }
+  
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateAppSettings",
+    dataType: "json",
+    data: {type: 'nickname', value: $("#addBlockedNicknameInput").val(), remarks: $("#addBlockedNicknameRemarksInput").val()},
+    success: function(data){
+      $("#addBlockedNicknameInput").val("");
+      $("#addBlockedNicknameRemarksInput").val("");
+      getRestrictedNicknameList();
+    },
+    error: function(){
+      alert("error occurred");
+    }
+  });
+});
+
+
+$(".env_restrictedNickname_remove").live("click", function(){
+  c = confirm("Are you sure to remove the restricted account nickname?\nUsers can use this name once it is removed.");;
+  if(!c)return;
+  
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateAppSettings",
+    dataType: "json",
+    data: {type: 'delete-restricted', value: $(this).parent(".env_restrictedNicknameTool").siblings(".env_restrictedNicknameValue").html()},
+    success: function(data){
+      getRestrictedNicknameList();
+    },
+    error: function(){
+      alert("error occurred");
+    }
+  });
+});
+
+
+var getPartnerApiList = function(){
+  $(".adminMangement_adminListContentAPI").fadeTo("fast", 0.6);
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/apiSettingsList",
+    dataType: "json",
+    data: { type: "partner" },
+    success: function(data){
+      if (data[0].status == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".adminMangement_adminListContentAPI").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".adminMangement_adminListContentAPI").fadeTo("fast", 1);
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,api){
+      
+        if (size == 0 && api['endOfList'] == "True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+        if (api['endOfList'] == "True"){
+          return;
+        }
+        
+        apiData = {
+          id: api['id'],
+          domain: api['domain'],
+          key: api['key'],
+          remarks: api['remarks']
+        };
+        
+        toAppend += $('#apiPartnerTemplate').tmpl(apiData).html();
+          
+        size++;
+      });
+      
+      $(".adminMangement_adminListContentAPI").html( toAppend );
+      
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContentAPI").fadeTo("fast", 1);
+    }
+  });
+};
+
+getPartnerApiList();
+
+
+
+
+
+$(".addPartnerApiButton").click(function(){
+
+  if ($("#addApiDomainInput").val()==null || $("#addApiKeyInput").val()==null){
+    alert("domain field and access key cannot be null");
+    return;
+  }
+  
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateApiSettings",
+    dataType: "json",
+    data: {action:"add", type: "partner", domain: $("#addApiDomainInput").val(), key: $("#addApiKeyInput").val(), remarks: $("#addApiRemarksInput").val()},
+    success: function(data){
+      $("#addApiDomainInput").val("");
+      $("#addApiKeyInput").val("");
+      $("#addApiRemarksInput").val("");
+      getPartnerApiList();
+      
+      alert("API added")
+    },
+    error: function(){
+      alert("error occurred");
+    }
+  });
+});
+
+
+$(".deletePartnerApiButton").live("click", function(){
+
+  var c = confirm("Are you sure to remove this partner api?");
+  if (!c){return}
+  
+  $(this).parent("div").addClass("toBeRemoved");
+  var api_id = $(this).parents(".adminMangement_adminDetail").find(".api_keyId").text();
+  
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateApiSettings",
+    dataType: "json",
+    data: {action: "delete", id: api_id},
+    success: function(data){
+      $("#addApiDomainInput").val("");
+      $("#addApiKeyInput").val("");
+      $("#addApiRemarksInput").val("");
+      getPartnerApiList();
+      
+      alert("API deleted successfully");
+    },
+    error: function(){
+      alert("error occurred");
+    }
+  });
+});
+
+
+
+var getOwnApiList = function(){
+  $(".adminMangement_adminListOwnApplicationAPI").fadeTo("fast", 0.6);
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/apiSettingsList",
+    dataType: "json",
+    data: { type: "own" },
+    success: function(data){
+      if (data[0].status == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".adminMangement_adminListOwnApplicationAPI").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".adminMangement_adminListOwnApplicationAPI").fadeTo("fast", 1);
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,api){
+      
+        if (size == 0 && api['endOfList'] == "True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+        if (api['endOfList'] == "True"){
+          return;
+        }
+        
+        apiData = {
+          id: api['id'],
+          domain: api['domain'],
+          key: api['key'],
+          remarks: api['remarks']
+        };
+        
+        toAppend += $('#apiOwnTemplate').tmpl(apiData).html();
+          
+        size++;
+      });
+      
+      $(".adminMangement_adminListOwnApplicationAPI").html( toAppend );
+      
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListOwnApplicationAPI").fadeTo("fast", 1);
+    }
+  });
+};
+
+getOwnApiList();
+
+
+
+$(".addOwnApiButton").click(function(){
+
+  if ($("#addOwnApiDomainInput").val()==null || $("#addOwnApiKeyInput").val()==null){
+    alert("domain field and access key cannot be null");
+    return;
+  }
+  
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateApiSettings",
+    dataType: "json",
+    data: {action:"add", type: "own", domain: $("#addOwnApiDomainInput").val(), key: $("#addOwnApiKeyInput").val(), remarks: $("#addOwnApiRemarksInput").val()},
+    success: function(data){
+      $("#addOwnApiDomainInput").val("");
+      $("#addOwnApiKeyInput").val("");
+      $("#addOwnApiRemarksInput").val("");
+      getOwnApiList();
+      
+      alert("API Added")
+    },
+    error: function(){
+      alert("error occurred");
+    }
+  });
+});
+
+
+$(".deleteOwnApiButton").live("click", function(){
+
+  var c = confirm("Are you sure to remove this partner api?");
+  if (!c){return}
+  
+  $(this).parent("div").addClass("toBeRemoved");
+  var api_id = $(this).parents(".adminMangement_adminDetail").find(".api_keyId").text();
+  
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateApiSettings",
+    dataType: "json",
+    data: {action: "delete", id: api_id},
+    success: function(data){
+      $("#addOwnApiDomainInput").val("");
+      $("#addOwnApiKeyInput").val("");
+      $("#addOwnApiRemarksInput").val("");
+      getOwnApiList();
+      
+      alert("API deleted successfully");
+    },
+    error: function(){
+      alert("error occurred");
+    }
+  });
+});
+
+
+
+
+
+</script>
+
+
+<script id="nicknameSystemDefault" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+    <div class="env_restrictedNicknameType">${type}</div>
+    <div class="env_restrictedNicknameValue">${value}</div>
+    <div class="env_restrictedNicknameRemarks">${remarks}</div>
+    <div class="env_restrictedNicknameTool"></div>
+  </div></div>
+</script>
+
+<script id="nicknameRestricted" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+    <div class="env_restrictedNicknameType">${type}</div>
+    <div class="env_restrictedNicknameValue">${value}</div>
+    <div class="env_restrictedNicknameRemarks">${remarks}</div>
+    <div class="env_restrictedNicknameTool"><span class="env_restrictedNickname_remove linkButton">Remove</span></div>
+  </div></div>
+</script>
+
+<script id="apiPartnerTemplate" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+    <div class="api_keyId">${id}</div>
+    <div class="api_domain">${domain}</div>
+    <div class="api_key">${key}</div>
+    <div class="api_remarks">${remarks}</div>
+    <div class="api_tool"><span class="deletePartnerApiButton linkButton">Remove</span></div>
+  </div></div>
+</script>
+
+<script id="apiOwnTemplate" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+    <div class="api_keyId">${id}</div>
+    <div class="api_domain">${domain}</div>
+    <div class="api_key">${key}</div>
+    <div class="api_remarks">${remarks}</div>
+    <div class="api_tool"><span class="deleteOwnApiButton linkButton">Remove</span></div>
+  </div></div>
+</script>
+
+
+{% endblock %}
+
+

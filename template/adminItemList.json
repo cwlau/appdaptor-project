@@ -1,0 +1,14 @@
+{% spaceless %}
+[
+{% for item in itemList %}  {
+    "id": "{{ item.id }}",
+    "name": "{{ item.title }}",
+    "owner": "{{ item.owner }}",
+    "viewCount": "{{ item.viewCount }}",
+    "status": "{{ item.status }}",
+    "endOfList": "{{ item.endOfList }}"
+  }{% ifnotequal item.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

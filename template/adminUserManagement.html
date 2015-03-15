@@ -1,0 +1,175 @@
+{% extends "adminTemplate.html" %}
+{% block title %}
+  User Management - Admin Console | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+<style>
+.bar_user{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+<div class="adminMangement">
+
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>Search Users</div>
+      <div class="adminMangement_adminListTitleSearchTool adminMangement_adminListTitleSearchToolForId">
+        User ID: <input type="text" class="searchIdInput" id="searchUserIDInput" placeholder="Account ID" />
+        <span class="button linkButton searchUserByID">Search</span>
+      </div>
+      <div class="adminMangement_adminListTitleSearchTool">
+        Nickname: <input type="text" id="searchUserNicknameInput" placeholder="Account Nickname" />
+        <span class="button linkButton searchUserByNickname">Search</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="userId">User ID</div>
+      <div class="name">User Nickname</div>
+      <div class="itemCount">Items</div>
+      <div class="accStatus">Status</div>
+      <div class="adminTool">Tools</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent">
+    
+        <div class='resultNotFound'>Enter value above to search for user accounts.</div>
+    
+    </div>
+  </div>
+</div>
+      
+
+{% endblock %}
+
+
+{% block includeStyle %}
+<link href='/style/jquery-ui-1.10.0.autocomplete.min.css' rel='stylesheet' type='text/css'>
+<link href='/style/admin.css' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+
+
+{% block bottomScript %}
+
+<script>
+
+$(".searchUserByNickname").live("click", function(){
+  search("nickname", $("#searchUserNicknameInput").val() );
+});
+$("#searchUserNicknameInput").live("keyup", function(e){
+  if(e.keyCode == 13){$(".searchUserByNickname").trigger("click");}
+});
+$(".searchUserByID").live("click", function(){
+  search("id", $("#searchUserIDInput").val() );
+});
+$("#searchUserIDInput").live("keyup", function(e){
+  if(e.keyCode == 13){$(".searchUserByID").trigger("click");}
+});
+
+var search = function(type, value){
+  $(".adminMangement_adminListContent").fadeTo("fast", 0.6);
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/userList",
+    dataType: "json",
+    data: {"type": type, "value": value},
+    success: function(data){
+      if (data[0].success== 'false'){
+        $(".loading_msg").hide();
+        toAppend = "<div class='resultNotFound'>No result is found.</div>";
+        $(".adminMangement_adminListContent").html( toAppend ).fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+      var toAppend = "";
+      
+      $.each(data, function(i,acc){
+        accountData = {
+          id: acc['id'],
+          nickname: acc['nickname'],
+          itemCount: acc['itemCount'],
+          accStatus: acc['status']
+        };
+        toAppend += $('#accountInfo').tmpl(accountData).html();
+        
+        if(acc['endOfList']=="True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+      });
+      
+      $(".adminMangement_adminListContent").html( toAppend );
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+    }
+  });
+};
+
+
+$(".accountDeactivate").live("click", function(){
+  updateStatus("deactivate", $(this).data("nickname") );
+});
+$(".accountActivate").live("click", function(){
+  updateStatus("activate", $(this).data("nickname") );
+});
+
+var updateStatus = function(type, value){
+  
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/updateStatus",
+    dataType: "json",
+    data: {"type": type, "value": value},
+    success: function(data){
+      if (data[0].success== 'false'){
+        $(".loading_msg").hide();
+        return;
+      }
+      
+      $(".loading_msg").hide();
+      
+      search("nickname", value );
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+    }
+  });
+};
+
+</script>
+
+
+<script id="accountInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+      <div class="userId">${id}</div>
+      <div class="name">${nickname}</div>
+      <div class="itemCount">${itemCount}</div>
+      <div class="accStatus">${accStatus}</div>
+      <div class="adminTool">
+        <span class="accountDeactivate" data-nickname="${nickname}">Suspend Account</span> |
+        <span class="accountActivate" data-nickname="${nickname}">Activate Account</span> |
+        <a href="/admin/event?actor=${nickname}" ><span class="accountEvent">Event</span></a>
+      </div>
+  </div></div>
+  
+  
+</script>
+
+{% endblock %}
+
+
+
+

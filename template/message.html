@@ -1,0 +1,404 @@
+{% extends "template.html" %}
+{% block title %}
+  My Messages | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+
+<div class="searchBarStyle n">
+  <div class="searchBarInnerStyle">
+    <div></div>
+    My Messages
+    <div></div>
+  </div>
+</div>
+
+
+<div class="messageTopDiv">
+  <div class="messageTopDiv_left">
+    <div class="messageType messageType_INBOX selectedMessageType"><a href="#inbox">All</a></div>
+    <div class="messageType messageType_UNREAD"><a href="#unread">Unread</div>
+    <div class="messageType messageType_SENT"><a href="#sent">Sent</a></div> |
+    <div class="messageType messageType_REQ_RECEIVED"><a href="#pending">Pending Request</a></div>
+    <div class="messageType messageType_REQ_SENT"><a href="#requestSent">Request Sent</a></div>
+    <div class="messageType messageType_REQ_APPROVED"><a href="#approved">Approved</a></div>
+  </div>
+  <div class="messageTopDiv_right">
+    <span class="button linkButton messageActionButton searchType n">Action<span class="arrow"></span></span>
+    <span class="button linkButton refreshMessageListButton ">Refresh</span>
+    <span class="button linkButton composeMessageButton composeMessage">Compose</span>
+  </div>
+</div>
+
+<div class="messageListContainer">
+
+<!--
+  <div class="messageItem messageItem_unread n">
+    <div class="messageListAttr messageListCheckbox"><input type="checkbox" /></div>
+    <div class="messageListAttr messageListSender">test</div>
+    <div class="messageListAttr messageListTitle">About item "tesetstsetstse dfsfs"</div>
+    <div class="messageListAttr messageListDate">5:59 pm</div>
+  </div>
+  -->
+  
+</div>
+
+
+
+{% endblock %}
+
+
+{% block bottomScript %}
+<script>
+
+var _MAX_RECIPIENT_MSG = "<span class='formTips'>Maximum "+ {{ optionalInfo|default:5 }} +" recipients.</span>";
+
+var _CURRENT_MESSAGE_TYPE = "inbox";
+if(location.hash == "#inbox"){
+  _CURRENT_MESSAGE_TYPE = "inbox";
+ $(".messageType_UNREAD").addClass("selectedMessageType").siblings(".selectedMessageType").removeClass("selectedMessageType");
+}
+if(location.hash == "#sent"){
+  _CURRENT_MESSAGE_TYPE = "sent";
+ $(".messageType_SENT").addClass("selectedMessageType").siblings(".selectedMessageType").removeClass("selectedMessageType");
+}
+if(location.hash == "#unread"){
+  _CURRENT_MESSAGE_TYPE = "unread";
+ $(".messageType_UNREAD").addClass("selectedMessageType").siblings(".selectedMessageType").removeClass("selectedMessageType");
+}
+if(location.hash == "#request"){
+  _CURRENT_MESSAGE_TYPE = "request";
+ $(".messageType_REQ_RECEIVED").addClass("selectedMessageType").siblings(".selectedMessageType").removeClass("selectedMessageType");
+}
+if(location.hash == "#requestSent"){
+  _CURRENT_MESSAGE_TYPE = "requestSent";
+ $(".messageType_REQ_SENT").addClass("selectedMessageType").siblings(".selectedMessageType").removeClass("selectedMessageType");
+}
+if(location.hash == "#approved"){
+  _CURRENT_MESSAGE_TYPE = "approved";
+ $(".messageType_REQ_APPROVED").addClass("selectedMessageType").siblings(".selectedMessageType").removeClass("selectedMessageType");
+}
+
+
+var load = function(target){
+  var url = "";
+  switch(target){
+    case "inbox": url="/message/inbox"; break;
+    case "sent": url="/message/sent"; break;
+    case "unread": url="/message/unread"; break;
+    case "request": url="/user/transaction/list"; break;
+    case "requestSent": url="/user/transaction/request/list"; break;
+    case "approved": url="/user/transaction/approved/list"; break;
+    default: url="/message/inbox"; 
+  }
+  
+  $(".loading_msg").show();
+  $(".messageListContainer").fadeTo("fast", 0.6);
+  totalItemCount = 0;
+  
+  $.ajax({
+    type: "POST",
+    url:  url,
+    dataType: "json",
+    data: {},
+    success: function(data){
+      if (data[0]!=null && data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".messageListContainer").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".messageListContainer").fadeTo("fast", 1);
+      var toAppend = "";
+      
+      if (target=="request" || target=="requestSent" || target=="approved"){
+        toAppend += $('#transactionHeader').tmpl({}).html();
+      }
+      var size = 0;
+      
+      $.each(data, function(i,conversation){
+      
+        conversationData = {
+          id: conversation['id'],
+          sender: conversation['sender'],
+          owner: conversation['owner'],
+          title: conversation['title'],
+          messageCount: conversation['messageCount'],
+          messageCountStyle: (conversation['messageCount']>1) ?"":" n ",
+          shopItemId: conversation['shopItemId'],
+          shopItemPrice: conversation['shopItemPrice'],
+          quantity: conversation['quantity'],
+          shopItemPriceInFloat: conversation['shopItemPriceInFloat'],
+          datetime: conversation['datetime'],
+          exactDate: conversation['exactDate'],
+          timeFromNow: conversation['timeFromNow'],
+          isRead: conversation['isRead'],
+          className: (conversation['isRead']=="False") ? " messageItem_unread" : ""
+        };
+        
+        if(conversation['endOfList'] != 'True'){
+          if(target=="request"){
+            toAppend += $('#transactionInfo').tmpl(conversationData).html();
+          }else if(target=="requestSent"){
+            toAppend += $('#transactionSentInfo').tmpl(conversationData).html();
+          }else if(target=="approved"){
+            toAppend += $('#transactionApprovedInfo').tmpl(conversationData).html();
+          }else{
+            toAppend += $('#conversationInfo').tmpl(conversationData).html();
+          }
+        }else{
+          // no result is found
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+        }
+        size++;
+        
+      });
+      
+      $(".messageListContainer").html( toAppend );
+      
+      $(".loading_msg").hide();
+      messageUtil.renewUnreadCount();
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+      $(".messageListContainer").fadeTo("fast", 1);
+    }
+  });
+}
+
+
+
+load(_CURRENT_MESSAGE_TYPE);
+
+
+
+
+$(".refreshMessageListButton").click(function(){
+  load(_CURRENT_MESSAGE_TYPE);
+});
+
+
+$(".messageType").click(function(){
+  $(this).addClass("selectedMessageType");
+  $(this).siblings(".selectedMessageType").removeClass("selectedMessageType");
+});
+
+$(".messageType_INBOX").click(function(){
+  _CURRENT_MESSAGE_TYPE = "inbox";
+  load(_CURRENT_MESSAGE_TYPE);
+});
+$(".messageType_UNREAD").click(function(){
+  _CURRENT_MESSAGE_TYPE = "unread";
+  load(_CURRENT_MESSAGE_TYPE);
+});
+$(".messageType_SENT").click(function(){
+  _CURRENT_MESSAGE_TYPE = "sent";
+  load(_CURRENT_MESSAGE_TYPE);
+});
+
+$(".messageType_REQ_RECEIVED").click(function(){
+  _CURRENT_MESSAGE_TYPE = "request";
+  load(_CURRENT_MESSAGE_TYPE);
+});
+$(".messageType_REQ_SENT").click(function(){
+  _CURRENT_MESSAGE_TYPE = "requestSent";
+  load(_CURRENT_MESSAGE_TYPE);
+});
+$(".messageType_REQ_APPROVED").click(function(){
+  _CURRENT_MESSAGE_TYPE = "approved";
+  load(_CURRENT_MESSAGE_TYPE);
+});
+
+
+var composeSuccess = function(){
+  load(_CURRENT_MESSAGE_TYPE);
+};
+
+
+$(".approveRequest").live("click", function(){
+  var c = confirm("Approve this request?");
+  if(!c)return;
+  
+  $.ajax({
+    type: "POST",
+    url:  "/user/confirmApprove",
+    dataType: "json",
+    data: { transactionId: $(this).data("itemid")},
+    success: function(data){
+      if (data[0]!=null && data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert(data[0].message);
+        return;
+      }
+      
+      alert("Request approved.");
+      $(".loading_msg").hide();
+      load(_CURRENT_MESSAGE_TYPE);
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+    }
+  });
+});
+$(".rejectRequest").live("click", function(){
+  var c = confirm("Reject this request?");
+  if(!c)return;
+  
+  $.ajax({
+    type: "POST",
+    url:  "/user/confirmReject",
+    dataType: "json",
+    data: { transactionId: $(this).data("itemid")},
+    success: function(data){
+      if (data[0]!=null && data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert(data[0].message);
+        return;
+      }
+      
+      alert("Request rejected.");
+      $(".loading_msg").hide();
+      load(_CURRENT_MESSAGE_TYPE);
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+    }
+  });
+});
+
+$(".cancelRequest").live("click", function(){
+  var c = confirm("Cancel this request?");
+  if(!c)return;
+  
+  $.ajax({
+    type: "POST",
+    url:  "/user/confirmCancel",
+    dataType: "json",
+    data: { transactionId: $(this).data("itemid")},
+    success: function(data){
+      if (data[0]!=null && data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert(data[0].message);
+        return;
+      }
+      
+      alert("Request cancelled.");
+      $(".loading_msg").hide();
+      load(_CURRENT_MESSAGE_TYPE);
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+    }
+  });
+});
+
+
+$(".resolveTransaction").live("click", function(){
+  var c = confirm("Are you sure to resolve this transaction?");
+  if (!c){return;}
+  
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/user/resolveTransaction",
+    dataType: "json",
+    data: { transactionId: $(this).data("transactionid")},
+    success: function(data){
+      if (data[0]!=null && data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert(data[0].message);
+        return;
+      }
+      
+      alert("The transaction is resolved successfully.");
+      $(".loading_msg").hide();
+      load(_CURRENT_MESSAGE_TYPE);
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+    }
+  });
+});
+</script>
+
+<script id="conversationInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="messageItem ${className}">
+    <div class="messageListAttr messageListCheckbox n"><input type="checkbox" /></div>
+    <a href="/message/${id}" class="messageListLink">
+      <div class="messageListAttr messageListSender" style="padding-left:10px;">${sender}<span class="messageCount ${messageCountStyle}"> (${messageCount})</span></div>
+      <div class="messageListAttr messageListTitle">${title}</div>
+      <div class="messageListAttr messageListDate" title="${timeFromNow}ago">${datetime}</div>
+    </a>
+  </div></div>
+ 
+ 
+</script>
+<script id="transactionHeader" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="messageItem messageItem_unread transactionItem" style="background-color:#fafafa;">
+    <div class="messageListAttr" style="width:80px;padding:10px;">User</div>
+    <div class="messageListAttr" style="width:200px;padding:10px;">Item</div>
+    <div class="messageListAttr" style="width:110px;padding:10px;">Price and Quantity</div>
+    <div class="messageListAttr"  style="width:170px;float:right;padding-top:10px;">Tools</div>
+  </div></div>
+ 
+ 
+</script>
+<script id="transactionInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="messageItem messageItem_unread transactionItem">
+    <div class="messageListAttr" style="width:80px;padding:10px;"><a href="/profile/${sender}" target="_blank">${sender}</a></div>
+    <div class="messageListAttr" style="width:200px;padding:10px;"><a href="/item/${shopItemId}" target="_blank">${title}</a></div>
+    <div class="messageListAttr" style="width:110px;padding:10px;">$ ${shopItemPriceInFloat} x ${quantity} item(s)</div>
+    <div class="messageListAttr"  style="width:170px;float:right;">
+      <span class="button linkButton approveRequest " data-itemid=${id}>Approve</span>
+      <span class="button linkButton rejectRequest " data-itemid=${id}>Reject</span>
+    </div>
+  </div></div>
+ 
+ 
+</script>
+<script id="transactionSentInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="messageItem messageItem_unread transactionItem">
+    <div class="messageListAttr" style="width:80px;padding:10px;"><a href="/profile/${owner}" target="_blank">${owner}</a></div>
+    <div class="messageListAttr" style="width:200px;padding:10px;"><a href="/item/${shopItemId}" target="_blank">${title}</a></div>
+    <div class="messageListAttr" style="width:110px;padding:10px;">$ ${shopItemPriceInFloat} x ${quantity} item(s)</div>
+    <div class="messageListAttr"  style="width:170px;float:right;">
+      <span class="button linkButton cancelRequest " data-itemid=${id}>Cancel</span>
+    </div>
+  </div></div>
+ 
+ 
+</script>
+<script id="transactionApprovedInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="messageItem messageItem_unread transactionItem">
+    <div class="messageListAttr" style="width:80px;padding:10px;"><a href="/profile/${sender}" target="_blank">${sender}</a></div>
+    <div class="messageListAttr" style="width:200px;padding:10px;"><a href="/item/${shopItemId}" target="_blank">${title}</a></div>
+    <div class="messageListAttr" style="width:110px;padding:10px;">$ ${shopItemPriceInFloat} x ${quantity} item(s)</div>
+    <div class="messageListAttr"  style="width:170px;float:right;">
+      <span class="button linkButton composeMessage" data-itemid=${shopItemId} data-owner="${sender}" data-title="${title}" >Send a message</span>
+      <span class="button linkButton resolveTransaction" data-transactionid=${id} >Resolve</span>
+    </div>
+  </div></div>
+ 
+ 
+</script>
+{% endblock %}
+
+
+{% block requestAlertModule %}
+{% endblock %}
+
+{% block messageAlertModule %}
+{% endblock %}
+
+

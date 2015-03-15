@@ -1,0 +1,561 @@
+{% extends "template.html" %}
+
+{% block title %}
+  {% ifequal optionalInfo.type 'myItem' %}
+    My Items
+  {% else %}
+    {% ifequal optionalInfo.keyword|default:'' '' %}
+    Search
+    {% else %}
+    {{ optionalInfo.keyword }} - Search Result
+    {% endifequal %}
+  {% endifequal %}
+   | Demo Shop
+{% endblock %}
+
+
+{% block canvas %}
+<style>
+.bar_search{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+      <div class="searchBarStyle searchBar">
+        <div class="searchBarInnerStyle">
+          <div style="width:100%">
+          
+            <div style="float:right;text-align:right;padding:7px 4px;" class='n'>
+              <span class="button toggleButton toggleButton-selected" title="Highlight Matched Text">
+                <img src="/image/wand.png" />
+              </span>
+            </div>
+            <div class='n' style="float:right;text-align:right;padding:7px 4px;">
+              <span class="button toggleButton toggleButton-first toggleButton-selected" title="Display as List">
+                <img src="/image/application_view_list.png" />
+              </span>
+              <span class="button toggleButton toggleButton-last" title="Display as Grid">
+                <img src="/image/application_view_tile.png" />
+              </span>
+            </div>
+            
+            
+            <div class="searchType button changeSearchType" ><span id="searchTypeText">
+              {% ifequal optionalInfo.type 'myItem' %}
+                My Items {% else %} All Items
+              {% endifequal %}</span><span class="arrow"></span></div>
+            <input type="text" id="searchInput" value="" placeholder="Enter keyword here" />
+            <span class="button linkButton searchButton">Search</span>
+            
+          </div>
+        </div>
+      </div>
+      
+      <div class="searchResultDesc" style="visibility:hidden;">
+        <div class="searchResultSort n">
+          <span id="sortSummary"><!--No sorting applied.--></span>
+          <div class="searchType button changeSearchSortOrder" >
+            <span>Sort</span><span class="arrow"></span>
+          </div>
+          <div class="searchType button searchActions" >
+            <span>Action</span><span class="arrow"></span>
+          </div>
+        </div>
+        
+        <div class="searchResultStat">
+          Showing <span class='n'>1 - <span id="currentItemLocator">0</span> of </span><span id="totalResultCount">0</span> items.
+          <span id="orderSequenceMessage"></span>
+        </div>
+      </div>
+      
+      <div class="shopItemList">
+        <div class='resultNotFound'>Enter keyword above to search for items.</div>
+    
+      <!--
+        <div class="shopItem">
+          <div class="shopItemInfo shopItemImage"><img src="http://www2.tradeduck.com/uploads/thumb/73190_12831454t.jpg" /></div>
+          <div class="shopItemInfo shopItemAttrArea">
+            <div class="shopItemName">Product Name</div>
+            <div class="shopItemCreationTime">Created: 23 Jan 2013, 00:00:58 (UTC)</div>
+            <div class="shopItemOwner">Owner: tester</div>
+            <div class="shopItemDescText">Description: Description text of the product 
+            Description text of the product Description text of the product ...
+            </div>
+          </div>
+          
+          <div class="shopItemPrice"><span class="">$ 130</span></div>
+          <div class="shopItemTools">
+            <span class="button linkButton addToWishListButton">+ Wish List</span>
+            <span class="button linkButton contactSellerButton">Contact Owner</span>
+          </div>
+        </div>
+        -->
+      </div>
+
+{% endblock %}
+
+
+{% block searchModule %}
+{% endblock %}
+
+
+
+{% block bottomScript %}
+
+<script type="text/javascript">
+
+{% ifequal optionalInfo.type 'myItem' %}
+  var defaultTarget = "myItem";
+  var defaultSearchTypeText = "My Items";
+{% else %}
+  {% ifequal optionalInfo.type 'myWishlist' %}
+    var defaultTarget = "myWishlist";
+    var defaultSearchTypeText = "My Wishlist";
+  {% else %}
+    var defaultTarget = "allItem";
+    var defaultSearchTypeText = "All Items";
+  {% endifequal %}
+{% endifequal %}
+
+var defaultSearchInput = "{{ optionalInfo.keyword|default:'' }}";
+var defaultSortOrder = "{{ optionalInfo.sortBy|default:'null' }}";
+var defaultDisplayType = "{{ optionalInfo.display|default:'list' }}";
+var defaultMinPrice = 0;
+var defaultMaxPrice = 0;
+var offset = 0;
+var _SEARCH_SUGGEST_LIMIT = {{ optionalInfo2|default:10 }};
+
+
+var init = function(){
+  $("#searchTypeText").html( defaultSearchTypeText );
+  $("#searchInput").val( defaultSearchInput );
+  
+  if (defaultSearchInput != "" || defaultTarget == "myItem" || defaultTarget == "myWishlist")
+    search(defaultTarget, defaultSearchInput, defaultMinPrice, defaultMaxPrice, defaultSortOrder, defaultDisplayType);
+    
+};
+
+
+// counter for toggling display for dropdown menu, use shortened var name
+var aa = ab = ac = 0;
+
+var resetAllButPreserve = function(value){
+  temp = value;
+  aa = ab = ac = 0;
+  return temp;
+}
+
+$(".changeSearchType").live("click", function(){
+  $("div.dropdownMenu").remove();
+  aa=resetAllButPreserve(aa);
+  if(aa++%2==0){
+    $("<div class='dropdownMenu'></div>").append("<div class='selectAllItem'>All Items</div>")
+      {% ifequal loggedIn 'true' %}{% ifnotequal userType 'visitor' %}
+        .append("<div class='selectMyItem'>My Items</div>")
+        .append("<div class='selectMyWishlist'>My Wishlist</div>")
+      {% endifnotequal %}{% endifequal %}
+        .append("<div class='selectPartnerSite'>Partner Sites</div>")
+      .appendTo(this);
+    $(".selectAllItem").mousedown(function(){defaultTarget = "allItem";$("#searchTypeText").html("All Items"); });
+    $(".selectMyItem").mousedown(function(){defaultTarget = "myItem";$("#searchTypeText").html("My Items"); });
+    $(".selectMyWishlist").mousedown(function(){defaultTarget = "myWishlist";$("#searchTypeText").html("My Wishlist");$("#searchInput").val(""); });
+    $(".selectPartnerSite").mousedown(function(){defaultTarget = "partner";$("#searchTypeText").html("Partner Sites"); });
+  }
+});
+
+$(".changeSearchSortOrder").live("click", function(){
+  $("div.dropdownMenu").remove();
+  ab=resetAllButPreserve(ab);
+  if(ab++%2==0){
+    $("<div class='dropdownMenu'></div>").append("<div class='sortByRelevance'>Sort by Relevance</div>")
+      .append("<div class='sortByPopularity'>Sort by Popularity</div>")
+      .append("<div class='sortBy'>Sort by </div>")
+      .appendTo(this);
+  }
+});
+
+$(".searchActions").live("click", function(){
+  $("div.dropdownMenu").remove();
+  ac=resetAllButPreserve(ac);
+  if(ac++%2==0){
+    $("<div class='dropdownMenu'></div>").append("<div class='saveThisSearch'>Save this search</div>")
+      .append("<div class='addToCollection'>Add search result to collection</div>")
+      .append("<div class='sortBy'>Sort by </div>")
+      .appendTo(this);
+  }
+});
+
+
+
+
+
+$("#searchInput").autocomplete({
+  source: function(request, response) {
+    $.ajax({
+      type: "POST",
+      url: "/search/suggest",
+      dataType: "json",
+      data: {
+        value : request.term,
+        target : defaultTarget
+      },
+      success: function(data) {
+        for(d in data){
+          
+        }
+        response(data);
+        
+      },
+      error: function(data){
+        console.log("Error occurred.");
+      }
+    });
+  },
+  minLength: 1,
+  select: function(event, ui) {
+    //$('#state_id').val(ui.item.id);
+    
+  }
+}).live("keyup", function(e){
+  if(e.keyCode == 13){
+    $(".searchButton").trigger("click");
+    $(this).autocomplete( "close" );
+  }
+});
+
+
+$(".searchButton").live("click", function(){
+  var value = $("#searchInput").val();
+  var minPrice = 0;
+  var maxPrice = 0;
+  var sortOrder = "";
+  var displayType = "list"; // for return value
+  
+  search(defaultTarget, value, minPrice, maxPrice, sortOrder, displayType);
+});
+
+
+
+
+
+var totalItemCount = 0;
+
+// The main search function
+var search = function(target, value, minPrice, maxPrice, sortOrder, type){
+  $(".loading_msg").show();
+  $(".shopItemList").fadeTo("fast", 0.6);
+  totalItemCount = 0;
+  offset = 0;
+  
+  $.ajax({
+    type: "POST",
+    url:  "/search/query",
+    dataType: "json",
+    data: {
+      target: target,
+      value: value,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      sortOrder: sortOrder,
+      offset: 0
+    },
+    success: function(data){
+    
+      $(".searchResultDesc").css("visibility", "visible");
+      
+      $(".shopItemList").fadeTo("fast", 1);
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,item){
+      
+        if (size == 0 && item['endOfList'] == "True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+        
+        itemCreationDate = (item['creationDate']) ? item['creationDate']: "Not yet published";
+        itemPartnerSite = (item['partnerSite']) ? item['partnerSite']: "";
+        itemImageUrl = item['imageUrl'] ?  item['imageUrl']: "/image/noimage.png";
+        if (itemImageUrl == "null" || itemImageUrl == "None"){
+          itemImageUrl = "/image/noimage.png";
+        }
+        itemUrl = item['url']? item['url']: "";
+        
+        itemData = {
+          id: item['id'],
+          title: item['title'],
+          description: item['description'],
+          imageUrl: itemImageUrl,
+          itemUrl: itemUrl,
+          markedPrice: item['markedPrice'],
+          discountPrice: item['discountPrice'],
+          quantity: item['quantity'],
+          status: item['status'],
+          partnerSite: itemPartnerSite,
+          creationDate: itemCreationDate,
+          paymentMethod: item['paymentMethod'],
+          viewCount: item['viewCount'],
+          owner: item['owner']
+        };
+        
+        if (item['endOfList'] == "True" ){
+        
+        }else{
+          console.log(itemPartnerSite);
+          if (itemPartnerSite != "" ){
+            toAppend += $('#partnerItemInfo').tmpl(itemData).html();
+          }else if (item['owner'] == _MY_ACCOUNT_NICKNAME ){
+            toAppend += $('#myItemInfo').tmpl(itemData).html();
+          }else if(target == "myWishlist"){
+            toAppend += $('#wishlistInfo').tmpl(itemData).html();
+          }else{
+            toAppend += $('#allItemInfo').tmpl(itemData).html();
+          }
+          size++;
+          offset++;
+        }
+      });
+      
+      totalItemCount += size;
+      $("#currentItemLocator").html(size);
+      $("#totalResultCount").html(totalItemCount);
+      if(size==0){
+        $("#orderSequenceMessage").html("");
+      }else if (value == ""){
+        $("#orderSequenceMessage").html("Order by Popularity and Price.");
+      }else{
+        $("#orderSequenceMessage").html("Order by Relevance.");
+      }
+      
+      if (size != 0 && size % _SEARCH_SUGGEST_LIMIT == 0){
+        // load more
+        toAppend += "<div class='searchLoadMoreItems'> Load more items </div>";
+      }
+      $(".shopItemList").html( toAppend );
+      $(".searchLoadMoreItems").click(function(){
+        searchContinue(target, value, minPrice, maxPrice, sortOrder, type)
+      });
+      
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".shopItemList").fadeTo("fast", 1);
+    }
+  });
+  
+};
+
+var searchContinue = function(target, value, minPrice, maxPrice, sortOrder, type){
+  $(".loading_msg").show();
+  $(".searchLoadMoreItems").fadeTo("fast", 0.6);
+  
+  $.ajax({
+    type: "POST",
+    url:  "/search/query",
+    dataType: "json",
+    data: {
+      target: target,
+      value: value,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      sortOrder: sortOrder,
+      offset: offset
+    },
+    success: function(data){
+      $(".searchLoadMoreItems").fadeTo("fast", 1);
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,item){
+      
+        if (item['endOfList'] == "True"){
+          $(".searchLoadMoreItems").hide();
+          return;
+        }
+        
+        itemCreationDate = (item['creationDate']) ? item['creationDate']: "Not yet published";
+        itemPartnerSite = (item['partnerSite']) ? item['partnerSite']: "";
+        itemImageUrl = item['imageUrl'] ?  item['imageUrl']: "/image/noimage.png";
+        itemUrl = item['url']? item['url']: "";
+        
+        itemData = {
+          id: item['id'],
+          title: item['title'],
+          description: item['description'],
+          imageUrl: itemImageUrl,
+          itemUrl: itemUrl,
+          markedPrice: item['markedPrice'],
+          discountPrice: item['discountPrice'],
+          quantity: item['quantity'],
+          status: item['status'],
+          partnerSite: itemPartnerSite,
+          creationDate: itemCreationDate,
+          paymentMethod: item['paymentMethod'],
+          viewCount: item['viewCount'],
+          owner: item['owner']
+        };
+        
+        if (item['endOfList'] == "True" ){
+        
+        }else{
+          console.log(itemPartnerSite);
+          if (itemPartnerSite != "" ){
+            toAppend += $('#partnerItemInfo').tmpl(itemData).html();
+          }else if (item['owner'] == _MY_ACCOUNT_NICKNAME ){
+            toAppend += $('#myItemInfo').tmpl(itemData).html();
+          }else if(target == "myWishlist"){
+            toAppend += $('#wishlistInfo').tmpl(itemData).html();
+          }else{
+            toAppend += $('#allItemInfo').tmpl(itemData).html();
+          }
+          size++;
+          offset++;
+        }
+      });
+      
+      totalItemCount += size;
+      $("#currentItemLocator").html(totalItemCount);
+      $("#totalResultCount").html(totalItemCount);
+      
+      $(".searchLoadMoreItems").before( toAppend );
+      if(size!=0 && size% _SEARCH_SUGGEST_LIMIT !=0){
+        $(".searchLoadMoreItems").hide();
+      }
+      
+      
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".searchLoadMoreItems").fadeTo("fast", 1);
+    }
+  });
+  
+};
+
+
+// initialize searching environment
+init();
+
+</script>
+<script id="wishlistInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="shopItem" data-itemid="${id}">
+    <div class="shopItemInfo shopItemImage"><img src="${imageUrl}" /></div>
+    <div class="shopItemInfo shopItemAttrArea">
+      <div class="shopItemName"><a href="/item/${id}">${title}</a></div>
+      <div class="shopItemCreationTime">Publish Date: ${creationDate}</div>
+      <div class="shopItemOwner">Owner: <a href="/profile/${owner}">${owner}</a></div>
+      <div class="shopItemOwner">View Count: ${viewCount}</div>
+      <div class="shopItemDescText">Description: ${description}</div>
+    </div>
+
+    <div class="shopItemPrice">
+      <span class="shopItemDiscountedPrice">$ ${markedPrice}</span>
+      <span class="shopItemQuantity">${quantity} item(s) left</span>
+    </div>
+    <div class="shopItemTools">
+      <span class="button linkButton removeFromWishListButton" data-itemid="${id}">Remove</span>
+      <span class="button linkButton contactSellerButton composeMessage" data-itemid="${id}" data-owner="${owner}">Contact Owner</span>
+    </div>
+    <div class="shopItemBuyNowTools">
+      <a href="/item/${id}"><span class="button linkButton buyNowButton" data-itemid="${id}">Order now</span></a>
+    </div>
+  </div></div>
+</script>
+
+
+<script id="allItemInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="shopItem" data-itemid="${id}">
+    <div class="shopItemInfo shopItemImage"><img src="${imageUrl}" /></div>
+    <div class="shopItemInfo shopItemAttrArea">
+      <div class="shopItemName"><a href="/item/${id}">${title}</a></div>
+      <div class="shopItemCreationTime">Publish Date: ${creationDate}</div>
+      <div class="shopItemOwner">Owner: <a href="/profile/${owner}">${owner}</a></div>
+      <div class="shopItemOwner">View Count: ${viewCount}</div>
+      <div class="shopItemDescText">Description: ${description}
+      </div>
+    </div>
+
+    <div class="shopItemPrice">
+      <span class="shopItemDiscountedPrice">$ ${markedPrice}</span>
+      <span class="shopItemQuantity">${quantity} item(s) left</span>
+      <!--
+      <span class="shopItemDiscountRate">(10% off)</span><br/>
+      <span class="shopItemOldPrice">$ ${discountPrice}</span>
+      -->
+    </div>
+    <div class="shopItemTools">
+      <span class="button linkButton addToWishListButton" data-itemid="${id}">+ Wish List</span>
+      <span class="button linkButton contactSellerButton composeMessage" data-itemid="${id}" data-owner="${owner}">Contact Owner</span>
+    </div>
+    <div class="shopItemBuyNowTools">
+      <a href="/item/${id}"><span class="button linkButton buyNowButton" data-itemid="${id}">Order now</span></a>
+    </div>
+  </div></div>
+
+</script>
+
+
+<script id="myItemInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="shopItem myShopItem" data-itemid="${id}">
+    <div class="shopItemInfo shopItemImage"><img src="${imageUrl}" /></div>
+    <div class="shopItemInfo shopItemAttrArea">
+      <div class="shopItemName"><a href="/item/${id}">${title}</a></div>
+      <div class="shopItemCreationTime">Publish Date: ${creationDate}</div>
+      <div class="shopItemStatus">Status: ${status}</div>
+      <div class="shopItemViewCount">View Count: ${viewCount}</div>
+      <div class="shopItemDescText">Description: ${description}
+      </div>
+    </div>
+
+    <div class="shopItemPrice">
+      <span class="shopItemDiscountedPrice">$ ${markedPrice}</span>
+      <span class=" myShopItemQuantity">${quantity} item(s) left</span>
+    </div>
+    <div class="shopItemTools">
+      <a href="/user/confirmDeleteItem?itemId=${id}"><span class="button linkButton deleteItemButton">Delete Item</span></a>
+      <a href="/user/editItem?itemId=${id}"><span class="button editItemButton">Edit Item</span></a>
+    </div>
+  </div></div>
+ 
+ 
+</script>
+
+<script id="partnerItemInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="shopItem partnerShopItem" data-itemid="${id}">
+    <div class="shopItemInfo shopItemImage"><img src="${imageUrl}" /></div>
+    <div class="shopItemInfo shopItemAttrArea">
+      <div class="shopItemName"><a href="${itemUrl}" target="_blank">${title}</a></div>
+      <div class="shopItemStatus">Partner Site</div>
+      <div class="shopItemDescText">Description: ${description}
+      </div>
+    </div>
+
+    <div class="shopItemPrice">
+      <span class="shopItemDiscountedPrice">$ ${markedPrice}</span>
+    </div>
+    <div class="shopItemTools">
+      <!--Partner site item.-->
+      <!--
+      <span class="button linkButton contactSellerButton composeMessage" data-itemid="${id}" data-owner="${owner}">Contact Owner</span>
+      -->
+    </div>
+    <div class="shopItemBuyNowTools">
+      <a href="${itemUrl}" target="_blank"><span class="button linkButton buyNowButton">Order now</span></a>
+    </div>
+  </div></div>
+ 
+ 
+</script>
+{% endblock %}
+
+

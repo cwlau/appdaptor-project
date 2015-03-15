@@ -1,0 +1,23 @@
+{% spaceless %}
+{
+"success": "true",
+"message": "",
+"total": "{{total}}",
+"items": [ {% for itemInfo in items %}
+{% ifnotequal itemInfo.noComma 'true' %},{% endifnotequal %}{
+  "id": "{{ itemInfo.id }}",
+  "title": "{{ itemInfo.title|truncatewords:14 }}",
+  "description": "{{ itemInfo.description|striptags|truncatewords:15 }}",
+  "image": "{{ itemInfo.imageUrl }}",
+  "seller": {
+    "id": "{{ itemInfo.owner }}",
+    "username": "{{ itemInfo.owner }}"
+  },
+  "price": "{{ itemInfo.markedPriceInFloat|floatformat:2 }}",
+  "url": "{{ itemInfo.localUrl }}",
+  "rating": ""
+}
+{% endfor %}
+]
+}
+{% endspaceless %}

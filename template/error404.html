@@ -1,0 +1,43 @@
+{% extends "template.html" %}
+{% block title %}
+    {% ifequal optionalInfo 'item' %}
+    Item
+    {% endifequal %}
+    {% ifequal optionalInfo 'user' %}
+    User
+    {% endifequal %}
+    {% ifequal optionalInfo 'message' %}
+    Conversation
+    {% endifequal %} Not Found | Demo Shop
+    
+{% endblock %}
+
+
+{% block canvas %}
+
+      <div class="errorContainer">
+      
+        <div class="errorMessage">
+        {% ifequal optionalInfo 'item' %}
+        Item does not exist. <br/><br/>
+        {% endifequal %}
+        {% ifequal optionalInfo 'user' %}
+        User does not exist. <br/><br/>
+        {% endifequal %}
+        {% ifequal optionalInfo 'message' %}
+        Conversation does not exist. <br/><br/>
+        {% endifequal %}
+        No result found.
+        </div>
+      </div>
+
+{% endblock %}
+
+
+{% block bottomScript %}
+
+{% endblock %}
+
+
+
+

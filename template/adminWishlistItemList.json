@@ -1,0 +1,12 @@
+{% spaceless %}
+[
+{% for item in wishlistItemList %}  {
+    "id": "{{ item.itemid }}",
+    "title": "{{ item.itemTitle }}",
+    "wishlistOwnerAccount": "{{ item.wishlistOwnerAccount }}",
+    "endOfList": "{{ item.endOfList }}"
+  }{% ifnotequal item.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

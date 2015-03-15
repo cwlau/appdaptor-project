@@ -1,0 +1,17 @@
+{% spaceless %}
+{
+  "id": "{{ item.id }}",
+  "title": "{{ item.title }}",
+  "description": "{{ item.description }}",
+  "seller": {
+    "id": "{{ item.owner }}",
+    "username": "{{ item.owner }}"
+  },
+  "image": "{{ item.image }}",
+  "price": "$ {{ item.price|floatformat:2 }}",
+  "url": "{{ item.url }}"
+}
+{% endspaceless %}
+
+
+

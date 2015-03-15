@@ -1,0 +1,20 @@
+{% spaceless %}
+[
+{% for transaction in transactionList %}  {
+    "id": "{{ transaction.id }}",
+    "sender": "{{ transaction.actor }}",
+    "owner": "{{ transaction.owner }}",
+    "title": "{{ transaction.itemTitle }}",
+    "quantity": "{{ transaction.quantity }}",
+    "shopItemId": "{{ transaction.itemId }}",
+    "shopItemPrice": "{{ transaction.itemPrice }}",
+    "shopItemPriceInFloat": "{{ transaction.itemPriceInFloat|floatformat:2 }}",
+    "displayDate": "{{ transaction.displayDate }}",
+    "exactDate": "{{ transaction.recordDate|date:'Y-m-d H:i:s' }}",
+    "timeFromNow": "{{ transaction.date_fromnow }}",
+    "endOfList": "{{ transaction.endOfList }}"
+  }{% ifnotequal transaction.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

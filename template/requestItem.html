@@ -1,0 +1,221 @@
+{% extends "template.html" %}
+{% block title %}
+  Request item "{{ optionalInfo.titleReadOnly }}" | Demo Shop
+{% endblock %}
+
+
+{% block canvas %}
+
+
+
+  {% ifequal optionalInfo.action 'confirmDelete' %}
+  <div class="deleteItemBanner">
+    <div style="font-size:1.1em;">
+    Are you sure to delete this item?<br/>This action cannot be undone!
+    </div>
+    
+    <div style="padding-top:4px;font-size:1.1em;">
+      <a href="/user/myItem"><span class="button linkButton">No, I want to keep this item</span></a>
+      <span class="button linkButton deleteItem">I want to delete this item</span>
+    </div>
+    
+    <div style="padding-top:10px;font-size:0.9em;">
+    Once you confirm to delete this item, other users will not be able to search this item.
+    </div>
+  </div>
+  {% else %}
+  
+    {% ifequal optionalInfo.action 'preview' %}
+    <div class="previewBanner">
+      This is a preview of your new item. Publish it to make it public.
+    </div>
+    {% else %}
+      {% if optionalInfo.expireIn > 0 %}
+      <div class="previewBanner">
+        This is a draft item. Publish it to make it visible to others!
+      </div>
+      {% endif %}
+    {% endifequal %}
+  
+  {% endifequal %}
+  
+  
+  <div class="shopItemViewer">
+  
+    <div class="shopItemTitleContainer"><div class="shopItemTitleContainerText">{{ optionalInfo.titleReadOnly }}</div></div>
+    
+    {% ifnotequal optionalInfo.action 'confirmDelete' %}
+    <div class="shopItemTools">
+      {% ifnotequal optionalInfo.owner userInfo.nickname %}
+        {% ifnotequal optionalInfo.action 'preview' %}
+        <span class="button linkButton addToWishListButton" data-itemid="{{ optionalInfo.id }}">+ Wishlist</span>
+        <span class="button linkButton contactSellerButton composeMessage" data-itemid="{{ optionalInfo.id }}" data-owner="{{ optionalInfo.owner }}" data-title="{{ optionalInfo.title|safe }}">Contact Owner</span>
+        <span class="button linkButton flagItemButton n">Flag</span>
+        {% endifnotequal %}
+      {% endifnotequal %}
+      
+      {% if optionalInfo.expireIn > 0 %}
+      <a href="/user/editItem?itemId={{ optionalInfo.id }}"><span class="button linkButton editItemButton">Edit item</span></a>
+      <span class="button linkButton publishButton">Publish Now</span>
+      {% else %}
+      {% ifequal optionalInfo.owner userInfo.nickname %}
+      <a href="/user/editItem?itemId={{ optionalInfo.id }}"><span class="button linkButton editItemButton">Edit item</span></a>
+      <a href="/user/confirmDeleteItem?itemId={{ optionalInfo.id }}"><span class="button linkButton">Delete item</span></a>
+      {% endifequal %}
+      {% endif %}
+    </div>
+    {% endifnotequal %}
+    
+    <div class="shopItemCanvas">
+      {% ifnotequal optionalInfo.imageLinkUrl '' %}
+      <a href="{{ optionalInfo.imageLinkUrl }}" target="_blank">
+      {% endifnotequal %}
+      
+        <div class="shopItemInfo shopItemImage"><img src="{{ optionalInfo.imageUrl }}" /></div>
+        
+      {% ifnotequal optionalInfo.imageLinkUrl '' %}
+      </a>
+      {% endifnotequal %}
+      
+      <div class="shopItemNavBar barStyle">
+        <div class="shopItemNavBarRightSide">
+          <div class="fb-like" data-send="false" data-layout="button_count" data-width="100" data-show-faces="true"></div>
+        </div>
+        <div class="shopItemNavBarRightSide">
+          <div class="g-plusone" data-size="medium"></div>
+        </div>
+        <div class="shopItemNavBarLeftSide">
+          <div class="shopItemNavBarLeftSideLink">Item Info</div>
+          <div class="shopItemNavBarLeftSideLink shopItemNavBarLeftSideLink-disabled n">Photo and Video</div>
+        </div>
+      </div>
+      
+      <div class="shopItemInfo shopItemCanvasInfo">
+      
+        <div class="shopItemView">
+          <div class="formAttr">
+            <div class="formAttrDesc ">Name:</div>
+            <div class="formAttrValue formAttrStaticValue" style="width:320px;">{{ optionalInfo.titleReadOnly }}</div>
+          </div>
+          <div class="formAttr">
+            <div class="formAttrDesc ">Item ID:</div>
+            <div class="formAttrValue formAttrStaticValue">
+              {{ optionalInfo.id }}
+            </div>
+          </div>
+          <div class="formAttr">
+            <div class="formAttrDesc ">Owner:</div>
+            <div class="formAttrValue formAttrStaticValue">
+              <a href="/profile/{{ optionalInfo.owner }}">{{ optionalInfo.owner }}</a>
+            </div>
+          </div>
+          <div class="formAttr">
+            <div class="formAttrDesc ">Creation Date:</div>
+            <div class="formAttrValue formAttrStaticValue">{{ optionalInfo.creationDate|date:"Y-m-d H:i:s" }}</div>
+          </div>
+          <div class="formAttr">
+            <div class="formAttrDesc ">Item{{ optionalInfo.quantity|pluralize }} remaining:</div>
+            <div class="formAttrValue formAttrStaticValue">{{ optionalInfo.quantity }}</div>
+          </div>
+          <div class="formAttr">
+            <div class="formAttrDesc ">Views:</div>
+            <div class="formAttrValue formAttrStaticValue">{{ optionalInfo.viewCount }}</div>
+          </div>
+          
+          {% ifequal optionalInfo.owner userInfo.nickname %}
+          <div class="formAttr">
+            <div class="formAttrDesc ">Item Status:</div>
+            <div class="formAttrValue formAttrStaticValue">{{ optionalInfo.status }} <i>(This attribute is visible to you only)</i></div>
+          </div>
+          <div class="formAttr">
+            <div class="formAttrDesc ">Item Privacy:</div>
+            <div class="formAttrValue formAttrStaticValue">{{ optionalInfo.privacy }} <i>(This attribute is visible to you only)</i></div>
+          </div>
+          
+            {% if optionalInfo.expireIn < 0 %}<!-- published -->
+            <div class="formAttr">
+              <div class="formAttrDesc ">Expiry Date:</div>
+              <div class="formAttrValue formAttrStaticValue">{{ optionalInfo.expiryDate|date:"Y-m-d" }} <i>(This attribute is visible to you only)</i></div>
+            </div>
+            {% else %}<!-- draft -->
+            <div class="formAttr">
+              <div class="formAttrDesc ">Expiry Date:</div>
+              <div class="formAttrValue formAttrStaticValue">{{ optionalInfo.expireIn }} days after date of publication <i>(This attribute is visible to you only)</i></div>
+            </div>
+            {% endif %}
+          {% endifequal %}
+          
+          <div class="formAttr">
+            <div class="formAttrDesc ">Description:</div>
+            <div class="formAttrValue formAttrStaticValue">{{ optionalInfo.description|removetags:'script'|safe }}</div>
+          </div>
+        </div>
+        
+        
+        
+        <div class="shopItemPrice">
+          <div class="priceContainer"><span>$ {{ optionalInfo.markedPrice|floatformat:2 }}</span></div>
+          {% ifequal optionalInfo.owner userInfo.nickname %}
+          <div class="shopItemPrice_OrderNowButton">Your own <br/>this item</div>
+          {% else %}
+          <div class="shopItemPrice_OrderNowButton OrderNowButton">Order Now!</div>
+          {% endifequal %}
+        </div>
+      </div>
+      
+      
+      
+    </div>
+    
+    
+  </div>
+  <div></div>
+
+{% endblock %}
+
+
+{% block bottomScript %}
+<script type="text/javascript">
+
+$(".shopItemPrice").click(function(){
+  var c = confirm("Are you sure to request to buy this item? Seller will be notified about this request!");
+
+});
+
+
+$(".publishButton").click(function(){
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/user/publishItem",
+    data: {
+      itemId: "{{optionalInfo.id}}"
+    },
+    success:function(xml){
+      var status = $("success",xml).text();
+      
+      if(status == "true"){
+        window.location.href="/search/?type=myItem&itemPublished=true";
+        
+      }else{
+        alert("Error occurred. Cannot publish changes.");
+        $(".loading_msg").hide();
+        console.log(xml);
+      }
+      
+    },
+    error: function(){
+      alert("Error occurred. Please try again later.");
+      $(".loading_msg").hide();
+    }
+  });
+});
+
+
+
+</script>
+{% endblock %}
+
+
+
+

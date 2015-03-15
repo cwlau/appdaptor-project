@@ -1,0 +1,173 @@
+{% extends "template.html" %}
+{% block title %}
+  {% ifequal optionalInfo.action 'view' %}
+    {{ optionalInfo.nickname }} - User Profile
+  {% else %}
+    My Profile
+  {% endifequal %} | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+
+      <div class="profileViewer">
+        {% ifequal optionalInfo.action 'view' %}
+          {% ifnotequal optionalInfo.imageLinkUrl '' %}
+          <a href="{{ optionalInfo.imageLinkUrl }}" target="_blank">
+          {% endifnotequal %}
+          
+            <div class="profileImageDiv"><img src="{{ optionalInfo.imageUrl }}" /></div>
+          
+          {% ifnotequal optionalInfo.imageLinkUrl '' %}
+          </a>
+          {% endifnotequal %}
+        {% else %}
+          {% ifnotequal userInfo.imageLinkUrl '' %}
+          <a href="{{ userInfo.imageLinkUrl }}" target="_blank">
+          {% endifnotequal %}
+          
+            <div class="profileImageDiv"><img src="{{ userInfo.imageUrl }}" /></div>
+          
+          {% ifnotequal userInfo.imageLinkUrl '' %}
+          </a>
+          {% endifnotequal %}
+        {% endifequal %}
+        
+        
+        <div class="profileTitle">{% ifequal optionalInfo.action 'view' %}
+          {{optionalInfo.nickname}}'s Profile
+        {% else %}
+          {{userInfo.nickname}}'s Profile (My Account)
+        {% endifequal %}</div>
+        <div style="height:30px;"></div>
+        <div class="profileDetails">
+          <div class="profileAttr ">
+            <div class="profileAttrDesc ">Nickname:</div>
+            <div class="profileAttrValue profileAttrStaticValue">{% ifequal optionalInfo.action 'view' %}
+                {{optionalInfo.nickname}}
+              {% else %}
+                {{userInfo.nickname}}
+              {% endifequal %}</div>
+          </div>
+          {% ifnotequal optionalInfo.name '' %}
+            <div class="profileAttr ">
+              <div class="profileAttrDesc ">Name:</div>
+              <div class="profileAttrValue profileAttrStaticValue">{% ifequal optionalInfo.action 'view' %}
+                {% comment %}{{optionalInfo.name}}{% endcomment %}
+              {% else %}
+                {{userInfo.name}}
+              {% endifequal %}</div>
+          </div>
+          {% endifnotequal %}
+          <div class="profileAttr ">
+            <div class="profileAttrDesc ">Email: </div>
+            <div class="profileAttrValue profileAttrStaticValue">{% ifequal optionalInfo.action 'view' %}
+                {% comment %}{{optionalInfo.email}}{% endcomment %}
+              {% else %}
+                {{userInfo.email}}
+              {% endifequal %}</div>
+          </div>
+          <div class="profileAttr ">
+            <div class="profileAttrDesc ">Description: </div>
+            <div class="profileAttrValue profileAttrStaticValue profileAttrDescriptionText">
+              <!-- use caja to make the description safe -->
+              <div id="profileDescription"><div style="min-height:60px;background-color:#fafafa;padding:6px;color:#666;">Loading description...</div></div>
+              <script type="text/javascript">
+                caja.initialize({
+                  cajaServer: 'https://caja.appspot.com/',
+                  debug: true
+                });
+                
+                caja.whenReady(function() {
+                  $("#profileDescription").html("");
+                });
+                
+                caja.load(document.getElementById('profileDescription'), undefined, function(frame) {
+                  if(_HTTP_HOST.indexOf("localhost") !== -1){
+                    // if it is in localhost, load sample description
+                    frame.code('https://googledrive.com/host/0Byvv-hG92EHIYkNzWW1Sb3Y2aHc/SampleDescription.html', 'text/html').run();
+                    // https://googledrive.com/host/0Byvv-hG92EHIYkNzWW1Sb3Y2aHc/EvilDescription.html
+                  } else {
+                    frame.code('/profile/description/' +
+                      {% ifequal optionalInfo.action 'view' %}
+                        '{{optionalInfo.nickname}}'
+                      {% else %}
+                        '{{userInfo.nickname}}'
+                      {% endifequal %}
+                    , 'text/html').run();
+                  }
+                });
+              </script>
+            </div>
+          </div>
+          <div class="profileAttr n">
+            <div class="profileAttrDesc ">User ratings: </div>
+            <div class="profileAttrValue profileAttrStaticValue">{% ifequal optionalInfo.action 'view' %}
+                This user has not received any ratings yet.
+              {% else %}
+                You have not received any ratings yet.
+              {% endifequal %}</div>
+          </div>
+          
+          
+          {% ifequal optionalInfo.action 'view' %}
+            {% ifequal optionalInfo.isStudent 'true' %}
+            <div class="profileAttr ">
+              <div class="profileAttrDesc ">More Info: </div>
+              <div class="profileAttrValue profileAttrStaticValue">This user is a verified student.</div>
+            </div>
+            {% endifequal %}
+          {% else %}
+            {% ifequal userInfo.isStudent 'true' %}
+            <div class="profileAttr ">
+              <div class="profileAttrDesc ">More Info: </div>
+              <div class="profileAttrValue profileAttrStaticValue">You are a verified student.</div>
+            </div>
+            {% endifequal %}
+          {% endifequal %}
+          
+          
+          
+          {% ifequal optionalInfo.action 'view' %}
+          <div class="profileTools">
+            <span class="button linkButton composeMessage" data-owner="{{optionalInfo.nickname}}" data-title="">
+              Send a message to {{optionalInfo.nickname}}
+            </span>
+          </div>
+          {% else %}
+          <div class="profileTools">
+            <a href="/user/editProfile"><span class="button editProfileButton">Edit my profile</span></a>
+            <a href="/user/settings/"><span class="button ">Account Settings</span></a>
+          </div>
+          {% endifequal %}
+          
+          
+          
+          
+        </div>
+      </div>
+      <div class="profileViewer n">
+        <div class="profileItemView">
+          <div class="profileSectionTitle">{% ifequal optionalInfo.action 'view' %}
+                {{optionalInfo.nickname}}'s Items ({{ optionalInfo.itemCount }})
+              {% else %}
+                My Items ({{ userInfo.itemCount }})
+              {% endifequal %}</div>
+          <!--pending for design-->
+        </div>
+      </div>
+      
+{% endblock %}
+
+{% block includeScript %}
+<script type="text/javascript" src="/script/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/script/jquery-ui-1.10.0.autoComplete.min.js"></script>
+<script type="text/javascript" src="//caja.appspot.com/caja.js"></script>
+{% endblock %}
+
+{% block bottomScript %}
+
+{% endblock %}
+
+
+
+

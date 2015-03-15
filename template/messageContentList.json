@@ -1,0 +1,16 @@
+{% spaceless %}
+[
+{% for message in messageList %}  {
+    "sender": "{{ message.sender }}",
+    "senderImageUrl": "{{ message.senderImageUrl }}",
+    "recipient": "{{ message.recipient }}",
+    "content": "{{ message.content|linebreaksbr|removetags:'script' }}",
+    "isRead": "{{ message.isRead }}",
+    "datetime": "{{ message.datetime }}",
+    "exactDate": "{{ message.exactDate|date:'Y-m-d H:i:s' }}",
+    "timeFromNow": "{{ message.date_fromnow }}"
+  }{% ifnotequal message.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

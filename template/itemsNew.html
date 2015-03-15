@@ -1,0 +1,98 @@
+{% extends "template.html" %}
+{% block title %}
+  What's New | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+<style>
+.bar_new{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+
+<div class="homepage_section_title">
+  What's New
+</div>
+<div class="homepage_section newItem_section" >
+
+  <div class='resultNotFound' style='border:none;'>Loading...</div>
+</div>
+
+{% endblock %}
+
+
+{% block bottomScript %}
+
+<script>
+
+var retrieve = function( type ){
+  var range = 20;
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/search/quickList",
+    dataType: "json",
+    data: {type: type, range: range},
+    success: function(data){
+      if (data[0]!=null && data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        return;
+      }
+      
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,item){
+      
+        if (item['endOfList'] == "True"){
+          toAppend = "<div class='resultNotFound' style='border:none;'>No result is found.</div>";
+          return;
+        }
+        
+        itemData = {
+          id: item['id'],
+          title: item['title'],
+          description: item['description'],
+          imageUrl: item['imageUrl'],
+          owner: item['owner']
+        };
+        size++;
+        toAppend += $('#itemInfo').tmpl(itemData).html();
+        
+      });
+      
+      $(".newItem_section").html( toAppend );
+      
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+    }
+  });
+}
+
+retrieve("new");
+</script>
+
+<script id="itemInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><a href="/item/${id}"><div class="homepageItem">
+    <img src="${imageUrl}" />
+    <div class="itemTitle">${title}</div>
+  </div></a></div>
+ 
+ 
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+

@@ -1,0 +1,561 @@
+
+@font-face {
+  font-family: 'Merienda One';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Merienda One'), local('MeriendaOne-Regular'), url(/resource/MeriendaOne.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(/resource/OpenSans.woff) format('woff');
+}
+
+
+
+/* override default styles */
+
+body{text-align:center;margin:0;background-color: #ffffff;font-family:'Open Sans',Helvetica,Arial,sans-serif;min-width:940px;}
+ul, li{padding:0;margin:0;}
+a{color:#6E6E6E;text-decoration:none;}
+a:hover{color:#FF8C05;text-decoration:underline;}
+a img{border:none;}
+input, textarea{font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:0.9em;outline:none;padding:4px;margin:0;}
+div[contenteditable=true]{outline:none;padding:6px;margin-right:-16px;}
+input:focus, textarea:focus{border:2px solid #2683FF;margin:-1px 0;}
+input[type=radio]{padding:4px;}
+label{padding:2px 4px;margin-right:16px;}
+
+
+
+/* common styles */
+.error, .notice, .errorNotice, .stdWidth{width: 940px;margin:auto;}
+.barStyle{
+  border-bottom:1px solid #dbdbdb;height:32px;overflow: hidden;
+  
+  background-color: #fcfcfc; 
+  background-image: -moz-linear-gradient(0deg, #f8f8f8, #fcfcfc 100.0%);
+  background-image: -webkit-linear-gradient(90deg, #f8f8f8, #fcfcfc 100.0%);
+  background-image: -o-linear-gradient(90deg, #f8f8f8, #fcfcfc 100.0%);
+  background-image: -ms-linear-gradient(90deg, #f8f8f8, #fcfcfc 100.0%);
+  background-image: linear-gradient(0deg, #f8f8f8, #fcfcfc 100.0%);
+}
+.n{display:none !important;}
+.loading_msg{display:none;}
+.formTips{color:#777;font-size:0.8em;font-style:italic;}
+
+
+
+/* Button styles */
+
+.button{
+	-webkit-user-select:none;-moz-user-select:none;user-select:none;font-size:0.8em;
+  margin-top:6px;margin-right:2px;padding:3px 5px;padding-top:4px;
+	border:1px solid #d4d4d4;background-color:#f7f7f7;border-radius:3px;cursor:default;display:inline-block;
+	background-image: -moz-linear-gradient(180deg, #ffffff, #d3d3de 150%);
+  background-image: -webkit-linear-gradient(270deg, #ffffff, #d3d3de 150%); 
+	background-image: linear-gradient(180deg, #ffffff, #d3d3de 150%);
+}
+.button:hover{
+	background-color:#FFFADC;
+	background-image: -moz-linear-gradient(180deg, #ffffff, #ede9f0 150%);
+  background-image: -webkit-linear-gradient(270deg, #ffffff, #ede9f0 150%); 
+	background-image: linear-gradient(180deg, #ffffff, #ede9f0 150%);
+}
+.button:active{
+	background-color:#eee;
+	background-image: -moz-linear-gradient(180deg, #f2f2f2, #c2bfc4 150%);
+	background-image: -webkit-linear-gradient(270deg, #f2f2f2, #c2bfc4 150%);
+	background-image: -o-linear-gradient(270deg, #f2f2f2, #c2bfc4 150%);
+	background-image: -ms-linear-gradient(270deg, #f2f2f2, #c2bfc4 150%);
+	background-image: linear-gradient(180deg, #f2f2f2, #c2bfc4 150%);
+}
+.button-disabled, .button-disabled:hover, .button-disabled:active{
+	-webkit-user-select:none;-moz-user-select:none;user-select:none;margin-top:6px;margin-right:2px;
+	color:#999 !important;font-size:0.8em;border:1px solid #e2e2e2; padding:3px 5px;padding-top:4px;
+	border-radius:3px;display:inline-block;cursor:default;
+	background-image: -moz-linear-gradient(180deg, #f6f6f6, #d3d3de 150%);
+  background-image: -webkit-linear-gradient(270deg, #f6f6f6, #d3d3de 150%); 
+	background-image: linear-gradient(180deg, #f6f6f6, #d3d3de 150%);
+}
+.linkButton{color:#6E6E6E;}
+.linkButton:hover{color:#FF8C05;}
+
+.toggleButton{margin:0;padding-bottom:0;float:left;}
+.toggleButton img{margin:0;padding:0;}
+.toggleButton-first{border-radius:4px 0 0 4px;}
+.toggleButton-middle{border-radius:0;}
+.toggleButton-last{border-radius:0 4px 4px 0;}
+
+.toggleButton-selected{background-image:none;background-color:#e3e3e3;}
+
+
+
+/* Popup messages - common style */
+
+div.popup-backgroundAlpha{position:fixed;top:0;left:0;width:100%;height:100%;margin:0;background-color:#f8f8f8;opacity:0.7;}
+.popup-messageComposer{position:fixed;top:40px;left:100px;width:500px;border:6px solid rgba(175,175,175,0.5);border-radius:5px;}
+.popup-messageComposerContainer{text-align:left;font-size:0.9em;}
+
+.popup-mainArea{background-color:#fff;padding:14px 8px;}
+.popupMessageTitle{background-color:#f9f9f9;border-bottom:1px solid #ddd;padding:12px 14px;font-weight:bold;font-size:1.2em;}
+
+.messageFormField{padding:4px;}
+.messageAttrDesc, .messageAttrInput{display:inline-block;padding:2px;vertical-align:top;}
+.messageAttrDesc{width:82px;padding-top:8px;font-size:0.9em;}
+.messageAttrInput{width:360px;}
+.messageAttrInput div.staticValue{border:1px solid #ddd;background-color:#f8f8f8;padding:4px;font-size:0.9em;width:100%;cursor:text;}
+
+.messageAttrInput input{width:358px;margin:0;}
+.messageAttrInput textarea{height:100px;min-height:100px;max-width:360px;min-width:360px;width:100%;margin:0;}
+.messageAttrInput textarea:focus{margin:-1px;}
+
+.popup-bottomControlArea{background-color:#f9f9f9;border-top:1px solid #ddd;padding:0 8px;padding-bottom:6px;font-size:1.1em;}
+.popup-bottomControlArea .messageAttrInput{}
+
+input.input_error{background-color:#FFFBD1;border:2px solid #E10000;margin:1px 0;padding:3px;}
+
+
+
+
+/* remaining parts */
+
+.loading_msg{
+	position:fixed;top:0;right:0;background-color:#C72600;
+	padding:4px 10px;font-size:0.8em;color:#ffffff;
+}
+
+
+
+
+div.body{overflow-y:auto;background-color: #fff;min-height:460px;}
+.main{padding:11px 0;padding-top:13px;height:40px;}
+.main.top_div{background-color:#fff;
+
+}
+.main div.title{font-size:1.5em;color:#7D7D7D;font-family:'Merienda One';} /*Shop Title*/
+.main div.title ul li{list-style:none;float:left;height:40px;}
+.main div.title span{}
+.main div.title span.titleText{display:block;margin-left:10px;padding-top:5px;text-shadow: 2px 2px 2px #aaa;}
+.main div.titleleft{float:left;}
+.main div.titletopleft{-moz-user-select:none; -webkit-user-select:none; user-select:none;}
+.main div.titleleft a{color: #7D7D7D;text-decoration:none;}
+.main div.titleleft a:hover{color: #0039A3;text-decoration:none;}
+.main div.titleright{float:right;}
+span.hasUnreadMessage{font-weight:bold;color:#F85000;}
+.main div.titletopright{padding-top:6px;font-size:0.9em;}
+
+
+
+.nav-inner{text-align:left;}
+
+
+
+
+
+ul.heading, ul.heading_right{
+  list-style: none; padding: 0;margin:0;
+	-moz-user-select:none; -webkit-user-select:none; user-select:none;
+}
+ul.heading{float:left;}
+ul.heading li, ul.heading_right li{
+	padding:7px 12px; margin:0; float:left; vertical-align:bottom;font-size:10pt;
+	cursor:hand;cursor:pointer;
+}
+ul.heading a, ul.heading_right a{color:#2B0C00;}
+ul.heading a:hover li, ul.heading_right a:hover li{
+  border:1px solid #ddd;background-color:#FEFFDC;padding:6px 11px;padding-bottom:7px;}
+ul.heading_right li{float:right;}
+
+.arrow{
+  position:relative;top:-1px;left:4px;border-style:solid dashed dashed;border-color:transparent;
+  border-top-color:#c0c0c0;border-width: 3px 3px 0;display: inline-block;
+  font-size: 0;height: 0;width: 0;padding-top: 1px;line-height: 0;
+}
+
+
+.shopCanvas{text-align:left;}
+.shopCanvasMainContainer{width:671px;min-height:200px;display:inline-block;padding-bottom:10px;}
+.shopCanvasModuleContainer{width:262px;min-height:100px;display:inline-block;float:right;}
+.admin_shopCanvasMainContainer{width:930px;min-height:400px;}
+
+
+.notice{}
+.errorNotice{display:none;}
+.notice div, .errorNotice div{background-color:#FFF0C7;color:#C23F00;padding:5px;
+  margin:8px auto;width:500px;font-size:0.8em;border-radius:4px;}
+.errorNotice div{background-color:#FFC7C7; color:#A30A00;}
+
+/* Home page */
+
+.homepage_section_title{margin-top:6px;padding:10px 20px;background-color:#FFFFD4;font-size:0.9em;}
+.homepage_section{margin-top:6px;font-size:0.9em;min-height:100px;text-align:left;height:180px;}
+.homepage_section_HOT{height:360px;}
+.homepage_section .homepageItem{display:inline-block;padding:20px 4px;width:156px;text-align:center;float:left;}
+a:hover .homepageItem{border:1px solid #FF8E47;margin:-1px;}
+.homepageItem img{width:88px;padding:4px;border:1px solid #ddd;}
+.homepageItem div.itemTitle{padding:4px;margin-top:4px;font-size:0.9em;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;}
+
+/* Message Home */
+.resultNotFound{border:1px solid #eee;padding:100px;font-size:0.9em;color:#888;text-align:center;}
+.messageType{color:#6e6e6e;cursor:pointer;}
+.messageType:hover{color:#FFA93A;text-decoration:underline;}
+.selectedMessageType{font-weight:bold;color:#000;}
+.messageTopDiv{border-bottom:1px solid #ddd;margin-top:10px;padding:2px;}
+.messageTopDiv_left{display:inline-block;font-size:0.8em;}
+.messageTopDiv_left div{display:inline-block;padding:6px 8px;}
+.messageTopDiv_right{display:inline-block;float:right;margin-right:10px;font-size:0.9em;position:relative;}
+.messageTopDiv_right .itemBlock{position:absolute;top:30px;right:0px;font-size:1em;display:none;}
+.messageTopDiv_right .itemBlock .itemBlockTitle{font-size:1.2em;}
+.messageTopDiv_right .itemBlock .itemBlockItemPrice{margin-top:6px;}
+
+.composeMessageButton, .messageActionButton, .replyMessageButton, .refreshMessageListButton{margin-top:0;}
+.messageActionButton{padding:3px 10px;padding-top:4px;}
+
+.messageListContainer{-moz-user-select:none;-webkit-user-select:none;user-select:none;}
+
+.messageItem{background-color:#fbfbfb;font-family:arial;border-bottom:1px solid #eee;cursor:pointer;}
+.messageItem:hover{background-color:#FFFEEB;}
+.messageItem_unread{background-color:#fff;border-bottom:1px solid #eee;font-weight:bold;}
+.messageListAttr{display:inline-block;overflow:hidden;white-space:nowrap;padding:8px 0;font-size:0.8em;vertical-align:bottom;}
+.messageListCheckbox{width:22px;padding:6px;}
+.messageListSender{width:150px;}
+.messageListTitle{width:390px;}
+.messageListDate{width:82px;}
+
+.transactionItem {height:34px;}
+.transactionItem .messageListAttr{padding:0;padding-left:20px;}
+
+a.messageListLink{color:#333;text-decoration:none;}
+a.messageListLink:hover{color:#FF8C05;text-decoration:none;}
+
+.conversationTitle{font-family:Arial; font-size:1.6em;}
+
+.messageThread{margin-top:8px; }
+.messageThread .messageThreadSenderInfo{float:left;width:94px;padding-top:8px;text-align:center;}
+.messageThread .messageThreadSenderInfo img{background-color:#fff;width:58px;border:1px solid #ddd;padding:2px;}
+.messageThread .messageThreadContentMainContainer{width:560px;border:1px solid #ddd;margin-left:98px;
+min-height:100px;border-radius:4px;}
+.messageThread .messageThreadContentInfo_TimeContainer{width:100%;}
+.messageThread .messageThreadContentInfo_Time{border-bottom:1px solid #ddd;padding:3px 10px;font-size:0.8em;background-color:#fdfdfd;}
+.messageThread .messageThreadContentInfo_ContentContainer{}
+.messageThread .messageThreadContentInfo_Content{font-size:0.9em;padding:10px;margin:0;}
+
+.messageThread .messageThreadSenderInfo_Name{font-size:0.8em;}
+
+.messageThreadSent .messageThreadSenderInfo{float:right;margin-right:10px;}
+.messageThreadSent .messageThreadContentMainContainer{margin-right:98px;margin-left:0;}
+
+.messageThreadReplyContainer{margin-top:24px;}
+.messageThreadReply{border-top:1px solid #eee;background-color:#fafafa;padding:16px 8px;padding-left:28px;}
+.messageThreadReply .messageThread{margin-top:0;}
+.messageThreadReply .messageThreadContentMainContainer{border-radius:0;width:520px;border:none;}
+.messageThreadReply .messageThreadContentInfo_Content{padding:0;}
+.messageThreadReply .messageThreadContentInfo_Content textarea{font-size:0.9em;min-height:65px;min-width:510px;max-width:510px;height:60px;}
+
+.messageThreadContentInfo_Content pre{font-family:'Open Sans', verdana, arial;font-size:0.9em;margin:0;}
+
+.messageThreadReply_ToolDiv{height:30px;padding:0 6px;}
+.messageThreadReply_OptionalTip{padding:4px;font-size:0.9em;display:inline-block;}
+.messageThreadReply_Submit{float:right;font-size:0.9em;}
+.messageThreadReply_Submit span{padding:3px 12px; padding-top:4px;}
+
+.errorTip{color:#D40400;font-size:0.8em;}
+
+.module_conversationPeopleList{}
+.module_conversationPeople{background-color:#fff;padding:2px 6px;height:44px;}
+.module_conversationPeople:hover{background-color:#FFFCEB;}
+.module_conversationPeopleImage, .module_conversationPeopleNickname{display:inline-block;vertical-align:top;margin-top:4px;float:left;}
+.module_conversationPeopleImage{}
+.module_conversationPeopleImage img{width:24px;padding:4px;margin:0;background-color:#fff;border:1px solid #ddd;}
+.module_conversationPeopleNickname{padding-left:14px;padding-top:6px;}
+
+
+
+/* Search Bar */
+
+.searchBarStyle{border:1px solid #eee;border-radius:4px;margin-top:6px;margin-bottom:6px;}
+.searchBarStyle div.searchBarInnerStyle{height:46px;padding:6px 20px;padding-bottom:0;background-color:#FFFDEE;}
+.searchBarStyle div.searchBarInnerStyle div{}
+
+.searchBar input#searchInput{width:300px;margin:0;margin-left:-4px;}
+.searchBar .searchType{font-size:0.8em;vertical-align:top;margin:4px 0;text-align:right;
+  border:1px solid #ddd;padding:5px 9px;padding-bottom:6px;border-radius:4px 0 0 4px;}
+.searchBar .searchButton{padding:4px 8px;}
+
+.ui-autocomplete{text-align:left !important;font-family:'Open Sans', verdana, arial !important;font-size:0.9em !important;}
+
+.changeSearchType, .changeSearchSortOrder, .searchActions{position:relative;}
+.dropdownMenu{position:absolute;top:30px;left:0;z-index:2;min-width:96px;border:1px solid #C6C6C6;background-color:#F7F7F7;padding:4px 0;}
+.dropdownMenu div{padding:5px 6px;text-align:left;}
+.dropdownMenu div:hover{background-color:#fff;}
+
+.changeSearchSortOrder .dropdownMenu{top:22px;min-width:130px;}
+.searchActions .dropdownMenu{top:22px;min-width:186px;}
+
+
+
+/* Shop Item Viewer */
+
+.shopItemViewer{margin-bottom:40px;position:relative;}
+.shopItemViewer .shopItemTools{position:absolute;top:0px;right:10px;font-size:0.9em;}
+.shopItemViewer .shopItemInfo{padding:0;}
+.shopItemTitleContainer{padding-left:148px;margin:15px 0;margin-top:40px;}
+.shopItemTitleContainerText{font-size:1.6em;font-family:'Myriad Pro';width:340px;}
+.shopItemCanvas{position:relative;border:1px solid #ddd;border-radius:4px;padding-bottom:30px;}
+.shopItemCanvas .shopItemImage {position:absolute;top:-70px;left:10px;background-color:#fff;}
+.shopItemNavBar{
+  border-bottom:none !important;margin-bottom:18px;padding-left:148px;
+  padding-top:8px;height:30px;font-size:0.8em;border-radius:4px 4px 0 0;
+  -moz-user-select:none;-webkit-user-select:none;user-select:none;
+}
+.shopItemNavBar .shopItemNavBarRightSide{float:right;margin-right:14px;width:70px;overflow:hidden;}
+.shopItemNavBar .shopItemNavBarRightSide
+.shopItemNavBar .shopItemNavBarLeftSide{}
+.shopItemNavBar .shopItemNavBarLeftSide div.shopItemNavBarLeftSideLink{
+  display:inline-block;background-color:#fff;padding:6px 12px;
+  border:1px solid #ececec;border-bottom:none;cursor:pointer;
+}
+.shopItemNavBar .shopItemNavBarLeftSide div.shopItemNavBarLeftSideLink-disabled{
+  background-color:#f6f6f6;cursor:default;
+}
+
+.shopItemCanvas .shopItemCanvasInfo{padding:5px 10px;padding-left:40px;display:block;position:relative;font-size:0.9em;}
+.shopItemCanvas .shopItemCanvasInfo .shopItemPrice{position:absolute;top:0;right:18px;min-width:100px;
+font-size:1.5em;border:1px solid #ddd;text-align:center;cursor:pointer;
+border-radius:4px 4px 0 0;}
+.shopItemPrice .priceContainer{padding:10px;}
+.shopItemPrice_OrderNowButton{border-top:1px solid #ddd;background-color:#F0F0F0;padding:6px;font-size:0.5em !important;}
+.OrderNowButton{background-color:#FFEBB8;}
+.shopItemPrice:hover .OrderNowButton{background-color:#FFF5CF;}
+.shopItemCanvas .formAttr{padding:5px 4px;}
+.shopItemCanvas .formAttrDesc{width:140px;}
+
+span.visibleToYouOnly{color:#787878;font-style:italic;}
+
+
+/* Search result */
+/* Shop Item list */
+
+.searchResultDesc{padding:7px;border-bottom:1px solid #dddddd;font-size:0.8em;}
+.searchResultDesc .searchResultSort{float:right;margin-top:-10px;}
+.searchResultDesc .searchResultSort .searchType{margin-left:4px;padding:2px 9px;font-size:0.9em;}
+
+.shopItem{border-bottom:1px solid #f7f7f7;min-height:120px;margin-bottom:2px;position:relative;}
+.myShopItem{border-left:2px solid #C5FFA3;border-right:2px solid #C5FFA3;}
+.shopItem:hover{
+-webkit-box-shadow: 0px 1px 6px 0px #bbbbbb;
+-moz-box-shadow:    0px 1px 6px 0px #bbbbbb;
+-o-box-shadow:      0px 1px 6px 0px #bbbbbb;
+-ms-box-shadow:     0px 1px 6px 0px #bbbbbb;
+box-shadow:         0px 1px 6px 0px #bbbbbb;
+}
+
+.shopItemActive{
+-webkit-box-shadow: 0px 1px 6px 0px #C2E5B3;
+-moz-box-shadow:    0px 1px 6px 0px #C2E5B3;
+-o-box-shadow:      0px 1px 6px 0px #C2E5B3;
+-ms-box-shadow:     0px 1px 6px 0px #C2E5B3;
+box-shadow:         0px 1px 6px 0px #C2E5B3;
+}
+.shopItem .button{visibility:hidden;}
+.shopItem:hover .button{visibility:visible !important;}
+.shopItem:hover .shopItemQuantity{visibility:hidden;}
+
+.shopItemInfo{padding:4px;display:inline-block;vertical-align:top;}
+.shopItemImage{margin:5px;width:118px;height:118px;text-align:center;vertical-align:middle;}
+.shopItemImage img{width:108px;height:108px;border:1px solid #eee;padding:4px;vertical-align:middle;}
+.shopItemAttrArea{width:350px;padding-top:10px;font-size:0.9em;}
+.shopItemName{font-size:1.3em;text-decoration:underline;padding-bottom:6px;font-family:'Myriad Pro';}
+.shopItemPrice{font-weight:bold;position:absolute;top:10px;right:20px;text-align:right;}
+.shopItemOldPrice{color:#CF2C00;text-decoration: line-through;font-size:0.9em;}
+.shopItemQuantity, .myShopItemQuantity{font-size:0.7em;font-weight:normal;display:block;}
+.shopItemDiscountedPrice{color:#028F00;font-size:1.4em;}
+.shopItemDiscountRate{color:#444;font-size:0.7em;}
+.shopItemCreationTime, .shopItemDescText, .shopItemOwner, .shopItemStatus, .shopItemViewCount{font-size:0.8em;}
+
+.shopItemTools{position:absolute;bottom:10px;right:10px;font-size:0.9em;}
+.shopItemBuyNowTools{position:absolute;top:34px;right:16px;font-size:0.9em;}
+
+.searchLoadMoreItems{padding:14px;text-align:center;font-size:1em;border:1px solid #ddd;background-color:#fcfcfc;cursor:pointer;margin-top:14px;}
+.searchLoadMoreItems:hover{background-color:#fcf4f4;}
+
+
+/* List by Category, Trends */
+
+.itemListTypeContainer{padding:6px;padding-top:14px;font-size:0.8em;}
+.categoryType{display:inline-block;margin:6px;color:#6e6e6e;cursor:pointer;}
+.categoryType:hover{color:#FFA93A;text-decoration:underline;}
+.selectedCategoryType{font-weight:bold;color:#000;}
+
+.itemListTitle{border:1px solid #ddd;padding:14px;margin-top:6px;font-size:1.2em;background-color:#FFFFE3;}
+.itemListTitleInnerStyle{}
+
+
+.itemListContainer{border:1px solid #ddd;padding:5px 0;padding-left:3px;}
+
+.itemBlock{display:inline-block;width:324px;border:1px solid #e7e7e7;margin:3px 2px;position:relative;
+background-color:#f4f4f4;
+background-image: -moz-linear-gradient(0deg, #f4f4f4, #ffffff 100%);
+background-image: -webkit-linear-gradient(90deg, #f4f4f4, #ffffff 100.0%);
+background-image: -o-linear-gradient(90deg, #f4f4f4, #ffffff 100%);
+background-image: -ms-linear-gradient(90deg, #f4f4f4, #ffffff 100%);
+background-image: linear-gradient(0deg, #f4f4f4, #ffffff 100%);
+}
+.itemBlock:hover{
+background-image: none;
+}
+
+.itemBlockAttr{display:inline-block;}
+.itemBlockImage{width:74px;padding:6px;}
+.itemBlockImage img{width:60px;height:60px;padding:4px;border:1px solid #eee;background-color:#fff;}
+.itemBlockInfoContainer{width:226px;vertical-align:top;padding-top:10px;}
+.itemBlockTitle{font-size:1em;width:220px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+.itemBlockDescription, .itemBlockItemPrice{font-size:0.8em;}
+.itemBlockDescription{width:220px;overflow: hidden;margin-top:4px;text-overflow: ellipsis;white-space: nowrap;}
+
+
+
+
+
+
+/* Add Item Form */
+/* Nickname setup form */
+.deleteItemBanner{
+  margin-top:10px;padding:6px;background-color:#FFF5F5;border:1px solid #990600;
+  font-size:0.9em;text-align:center;
+}
+.previewBanner{margin-top:10px;padding:6px;background-color:#FFFAE8;font-size:0.9em;text-align:center;}
+
+.addItemForm, .editNicknameForm, .profileViewer{
+  border: 1px solid #dddddd;padding:8px 16px;border-radius:4px;margin:6px auto;
+  margin-bottom:20px;position:relative;
+}
+.addItemFormTitle, .editNicknameFormTitle{
+  font-size:1.5em;margin-bottom:10px;padding:5px 12px;padding-top:20px;border-bottom: 1px solid #dddddd;
+}
+.addItemFormDesc, .editNicknameFormDesc{padding:6px;font-size:0.9em;}
+.addItemFormDesc, .editNicknameFormRemark{padding:6px;font-size:0.8em;}
+.addItemFormField, .editNicknameFormField{font-size:0.9em;margin:4px;vertical-align:top;}
+.addItemFormSubmitButton, .editNicknameSubmitButton{font-size:0.9em !important;}
+
+.errorTips{color:#CC1A00;font-size:0.9em;}
+
+
+/* Nickname setup form */
+.editNicknameForm{margin-bottom:160px;}
+.editNicknameFormField_NicknameSetup{
+  padding:8px 20px;line-height:40px;border:1px solid #eee;background-color:#F3F6FF;border-radius:2px;}
+.div_NicknameSetup, .div_NicknameSetupText, .div_NicknameSetupStatusText{display:inline-block;}
+.div_NicknameSetup{margin:0 15px;}
+span.nicknameSetup_Valid{color:#066600;background: url('/image/tick.png') 0 2px no-repeat;padding-left:20px;}
+span.nicknameSetup_Invalid{color:#AE1900;background: url('/image/cross.png') 0 2px no-repeat;padding-left:20px;}
+.input_NicknameSetup{width:180px;margin:0;}
+@media screen and (-webkit-min-device-pixel-ratio:0) { /** For Google Chrome adjustment **/
+	.input_NicknameSetup:focus{margin:-1px 0;}
+}
+.nicknameFormTips{position:absolute;bottom:15px;right:20px;}
+.formStepTips{position:absolute;top:20px;right:25px;}
+
+
+
+/* profile, profile edit , add items */
+.profileViewer{padding:0px 0px;position:relative;}
+.profileViewer .profileTools{position:absolute;top:108px;right:14px;font-size:0.9em;}
+.profileEditor input[type=text], .itemEditor input[type=text]{margin:0;width:200px;}
+.itemEditor input#formAttrValue_NAME, .itemEditor input#formAttrValue_TITLE{width:340px;}
+.profileImageDiv{float:left;margin:0 16px;margin-top:16px;}
+.profileImageDiv img{padding:4px;border:1px solid #ddd;background-color:#fff;width:100px;}
+.profileTitle{padding:18px 14px;padding-top:50px;font-size:1.6em;margin-bottom:10px;
+  border-bottom: 1px solid #dddddd;background-color:#E8F1FF;font-family:'Myriad Pro';
+}
+.profileDetails, .itemDetails{padding:16px;padding-left:40px;width:620px}
+.itemDetails{padding-left:20px;}
+.profileEditor .profileAttr, .formEditor .formAttr{min-height:46px;}
+.profileAttr, .formAttr{font-size:0.9em;padding:4px 0;}
+.profileAttrDesc, .profileAttrValue, .profileAttrPrivacy, .formAttrDesc, .formAttrValue{
+  display:inline-block;vertical-align:top;
+}
+.profileAttrDesc, .profileAttrValue{font-size:0.9em;}
+.profileAttrDesc, .formAttrDesc{width:110px;padding-top:7px;}
+.profileAttrStaticValue, .formAttrStaticValue{padding-top:7px;}
+.profileAttrDescriptionEditor *, .formAttrDescriptionEditor *{display:block !important;}
+.profileAttrDescriptionText *, .formAttrDescriptionText *{}
+
+.profileAttrValue, .formAttrValue, .formAttrValue #toolbar, .formAttrValue #editMe{width:460px;}
+
+.formAttrEditDescription *{display:inline-block !important;}
+.formAttrEditDescription #toolbar, .formAttrEditDescription #editMe{border:1px solid #d8d8d8;}
+.formAttrEditDescription #editMe{border:1px solid #eee;padding:6px;height:250px;overflow:auto;}
+
+.goog-menuitem-content{text-align:left;}
+
+.profileAttrPrivacy{width:30px;height:30px;position:relative;cursor:pointer;}
+.profileAttrPrivacy:hover{background-color:rgba(188,188,188,0.7);}
+.profileAttrPrivacy_PRIVATE{background: url('/image/lock.png') 7px 7px no-repeat;}
+.profileAttrPrivacy_SEMIPRIVATE{background: url('/image/tag-red.png') 7px 7px no-repeat;}
+.profileAttrPrivacy_PUBLIC, .profileAttrPrivacyNotEditable{background: url('/image/world.png') 7px 7px no-repeat;}
+.profileAttrPrivacyStatus{
+  background-color:rgba(188,188,188,0.7);padding:6px 8px;padding-left:2px;font-size:0.9em;
+  position:absolute;top:0;left:30px;z-index:1;white-space:nowrap;
+}
+
+.profileSectionTitle{border-bottom:1px solid #ddd; font-size:1.2em;padding:2px 16px;}
+.profileItemView{border:1px solid #ddd;height:60px;margin:16px;}
+
+
+
+
+/* Modules at Right hand side */
+
+.userProfileModule{margin-top:6px;border:1px solid #dfdfdf;background-color:#fbfbfb;padding:0 4px;padding-top:4px;
+min-height:40px;
+}
+.userProfileModule .profileImageContainer{display:inline-block;padding:4px;}
+.userProfileModule .profileImageContainer img{padding:4px;border:1px solid #eee;background-color:#fff;}
+.userProfileModule .profileInfoContainer{
+display:inline-block;padding:4px 0;float:right;text-align:left; width:178px;overflow:auto;font-size:0.9em;
+}
+.userProfileModule .profileNotLoggedInAdjust{width:180px;}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) { /** For Google Chrome adjustment **/
+	.userProfileModule .profileInfoContainer{padding-top:6px;}
+}
+.profileNickname{font-size:1.1em;}
+.profileSubInfoContainer{margin:4px auto;}
+.profileWishList{padding-top:8px;font-size:0.9em;}
+
+.profileButtons{clear:both;}
+
+
+
+
+.moduleStyle{border:1px solid #eee;border-radius:4px;margin-top:6px;}
+.moduleStyleSharp{border:1px solid #FFDEBA;}
+.moduleStyle .moduleBarStyle{background-color:#eee;height:26px;padding:0 8px;padding-top:6px;}
+.moduleBarStyle{font-size:0.9em;}
+.moduleStyleSharp .moduleBarStyle{
+background-image:-webkit-linear-gradient(90deg, rgb(252, 245, 245), #fcfcfc 100.0%);
+background-image: linear-gradient(0deg, rgb(252, 245, 245), rgb(255, 252, 252) 100%);
+}
+.moduleContentStyle{padding:6px;font-size:0.8em;}
+.moduleSearchButton{font-size:0.9em !important;}
+
+.moduleStyle #moduleSearchInput, .moduleStyle #moduleSearchInput:focus{width:177px;margin:0px;margin-right:4px;}
+.moduleStyle .searchButton{margin-left:4px;font-size:0.9em;}
+
+
+
+.trans_bar {background-image: -moz-linear-gradient(center top , rgba(0, 0, 0, 0.2), transparent);
+background:url('/image/bottomLine.png') repeat-x;
+    bottom: 0;height: 6px;margin-top:14px;}
+.footerArea {background-color: #fafafa;padding:0;margin:auto; color:#616161;font-size:0.9em;}
+.footerAreaInner {padding:30px 0;padding-bottom:60px;text-align:left;}
+.footerRight{float:right;}
+
+
+.errorContainer{border:1px solid #d9d9d9;border-radius:4px;
+  margin:14px 0;margin-bottom:50px;padding:100px 10px;text-align:center;}
+.errorMessage{}
+

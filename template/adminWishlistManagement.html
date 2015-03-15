@@ -1,0 +1,182 @@
+{% extends "adminTemplate.html" %}
+{% block title %}
+  Wishlist Management - Admin Console | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+<style>
+.bar_wishlist{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+
+<div class="adminMangement">
+
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>Search Wishlist</div>
+      
+      <div class="adminMangement_adminListTitleSearchTool" style="width:540px;">
+        Item ID: <input type="text" class="searchIdInput" id="searchItemIDInput" placeholder="Item ID" />
+        Account: <input type="text" id="searchAccountInput" placeholder="Account Nickname" />
+        <span class="button linkButton searchWishlistButton">Search</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="itemId">Item ID</div>
+      <div class="wishlistItemName">Wishlist Item Name</div>
+      <div class="wishlistItemOwner">Wishlist Owner</div>
+      <div class="itemTool">Item Tools</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent">
+    
+        <div class='resultNotFound'>Enter value above to search for wishlist items.</div>
+    
+    </div>
+  </div>
+</div>
+      
+
+{% endblock %}
+
+
+{% block includeStyle %}
+<link href='/style/jquery-ui-1.10.0.autocomplete.min.css' rel='stylesheet' type='text/css'>
+<link href='/style/admin.css' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+{% block bottomScript %}
+
+<script>
+// click on button
+$(".searchWishlistButton").live("click", function(){
+  search($("#searchItemIDInput").val(), $("#searchAccountInput").val() );
+});
+
+// press enter
+$("#searchItemIDInput").live("keyup", function(e){
+  if(e.keyCode == 13){$(".searchWishlistButton").trigger("click");}
+});
+$("#searchAccountInput").live("keyup", function(e){
+  if(e.keyCode == 13){$(".searchWishlistButton").trigger("click");}
+});
+
+var search = function(itemid, account){
+  $(".adminMangement_adminListContent").fadeTo("fast", 0.6);
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/wishlist/find",
+    dataType: "json",
+    data: {"itemid": itemid, "account": account},
+    success: function(data){
+      if (data[0].success== 'false'){
+        $(".loading_msg").hide();
+        toAppend = "<div class='resultNotFound'>No result is found.</div>";
+        $(".adminMangement_adminListContent").html( toAppend ).fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+      var toAppend = "";
+      
+      $.each(data, function(i,item){
+        if(i==0 && item['endOfList']=="True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+        if (item['endOfList'] == "True"){
+          return;
+        }
+        
+        itemData = {
+          id: item['id'],
+          title: item['title'],
+          wishlistOwnerAccount: item['wishlistOwnerAccount']
+        };
+        toAppend += $('#itemInfo').tmpl(itemData).html();
+        
+      });
+      
+      $(".adminMangement_adminListContent").html( toAppend );
+      $(".loading_msg").hide();
+      $(".errorNotice").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+    }
+  });
+};
+
+
+
+
+$(".deleteWishlistItemByAdmin").live("click", function(){
+  $(this).addClass("toBeRemoved");
+  deleteWishlistItem( $(this).data("itemid"), $(this).data("account") );
+});
+
+var deleteWishlistItem = function( itemId ){
+  
+  var c = confirm("Are you sure to remove the wishlist item?");
+  if (!c){
+    $(".toBeRemoved").removeClass("toBeRemoved");
+    return;
+  }
+  
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/wishlist/delete",
+    dataType: "json",
+    data: {"value": itemId},
+    success: function(data){
+      if (data[0].success== 'false'){
+        $(".loading_msg").hide();
+        return;
+      }
+      
+      $(".loading_msg").hide();
+      $(".toBeRemoved").fadeOut();
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+    }
+  });
+};
+
+
+</script>
+
+
+<script id="itemInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+      <a href="/item/${id}" target="_blank">
+        <div class="itemId">${id}</div>
+        <div class="wishlistItemName">${title}</div>
+      </a>
+      <a href="/profile/${wishlistOwnerAccount}" target="_blank">
+        <div class="wishlistItemOwner">${wishlistOwnerAccount}</div>
+      </a>
+      
+      <div class="itemTool">
+        <span class="deleteWishlistItemByAdmin linkButton" data-itemid="${id}" data-account="${wishlistOwnerAccount}">Delete Wishlist Item</span>
+      </div>
+      
+  </div></div>
+
+</script>
+
+{% endblock %}
+
+
+
+

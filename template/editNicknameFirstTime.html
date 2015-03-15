@@ -1,0 +1,135 @@
+{% extends "template.html" %}
+{% block title %}
+  Pick a nickname | Demo Shop
+{% endblock %}
+
+{% block pickNicknameNotice %}
+{% endblock %}
+
+{% block accountModuleLinks %}
+{% endblock %}
+
+{% block canvas %}
+
+      <div class="editNicknameForm">
+        <div class="formTips formStepTips">
+          Step 1 of 2
+        </div>
+        
+        <div class="editNicknameFormTitle">Setup Profile > Pick a nickname</div>
+        <div class="editNicknameFormDesc">
+          Please pick a unique nickname for this service. 
+          It will be public to all from the Internet. (Please do not disclose your personal information here!)<br/><br/>
+          A valid nickname should only contain 5 to 20 letters (a-z) or numbers (0-9).
+        </div>
+        <div class="editNicknameFormField editNicknameFormField_NicknameSetup">
+          <div class="div_NicknameSetupText">Nickname:</div>
+          <div class="div_NicknameSetup"><input class="input_NicknameSetup" id="input_NicknameSetup" type ="text" /></div>
+          <div class="div_NicknameSetupStatusText"></div>
+        </div>
+        <div class="editNicknameFormRemark">
+          By clicking "Continue", you accept the Terms of Use and Privacy Policy of our service.
+        </div>
+        
+        <div class="editNicknameFormField editNicknameFormField_Submit">
+          <span class="button-disabled editNicknameFormConfirmButton">Continue</span>
+        </div>
+        <div class="formTips nicknameFormTips">
+          You cannot change nickname after submission.
+        </div>
+      </div>
+      
+{% endblock %}
+
+{% block includeScript %}
+  <script type="text/javascript" src="/script/jquery-1.8.3.min.js"></script>
+{% endblock %}
+
+
+{% block bottomScript %}
+<script type="text/javascript">
+var _NICKNAME_MIN_LENGTH = 5;
+var _NICKNAME_MAX_LENGTH = 20;
+var nickname = "";
+var isFormValid = false;
+
+
+var validateInLocal = function(str){
+  //str = str.toString();
+  if (str.length < _NICKNAME_MIN_LENGTH){
+    return false;
+  }
+  if (str.length > _NICKNAME_MAX_LENGTH){
+    return false;
+  }
+  if (!str.match(/^[0-9a-zA-Z]+$/)){
+    //return false;
+  }
+  
+  return true;
+};
+
+$("#input_NicknameSetup").keyup(function(){
+  if( validateInLocal($(this).val()) ){
+    nickname = $(this).val();
+    $.ajax({
+      type:"POST",
+      url:"/user/settings/checkNicknameAvailability",
+      data:{nickname: nickname},
+      success:function(xml){
+        console.log(xml);
+        var status = $("success",xml).text();
+        
+        if(status == "true"){
+          $(".div_NicknameSetupStatusText").html("<span class='nicknameSetup_Valid'>\""+nickname+"\" is available!</span>");
+          $(".editNicknameFormConfirmButton").addClass("button").removeClass("button-disabled");
+          isFormValid = true;
+        }else{
+          $(".div_NicknameSetupStatusText").html("<span class='nicknameSetup_Invalid'>"+$("message",xml).text()+"</span>");
+          $(".editNicknameFormConfirmButton").addClass("button-disabled").removeClass("button");
+          isFormValid = false;
+        }
+        
+      }
+    });
+  }else{
+    isFormValid = false;
+    if($(this).val().length>12){
+      $(".div_NicknameSetupStatusText").html("<span class='nicknameSetup_Invalid'>This value is too long.</span>");
+    }else{
+      $(".div_NicknameSetupStatusText").html("");
+    }
+    $(".editNicknameFormConfirmButton").addClass("button-disabled").removeClass("button");
+  }
+});
+
+$(".editNicknameFormConfirmButton").click(function(){
+  if (!isFormValid){
+    $(".div_NicknameSetupStatusText").html("<span class='nicknameSetup_Invalid'>Please enter a valid nickname.</span>");
+    return;
+  }
+  $(".loading_msg").show();
+  $.ajax({
+    type:"POST",
+    url:"/user/settings/nickname",
+    data:{nickname: $(".input_NicknameSetup").val()},
+    success:function(xml){
+      $(".loading_msg").hide();
+      if($("success",xml).text() == "true"){
+        window.location.href="/user/editProfile?profileSetup";
+      }else{
+        alert("Cannot create account. Please try again later.");
+      }
+    },
+    error: function(){
+      $(".loading_msg").hide();
+      alert("Cannot create account. Please try again later.");
+    }
+  });
+});
+</script>
+{% endblock %}
+
+
+
+

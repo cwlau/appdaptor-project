@@ -1,0 +1,19 @@
+{% spaceless %}
+[
+{% for conversation in conversationList %}  {
+    "id": "{{ conversation.id }}",
+    "sender": "{{ conversation.sender }}",
+    "title": "{{ conversation.title }}",
+    "messageCount": "{{ conversation.messageCount }}",
+    "shopItemId": "{{ conversation.shopItemId }}",
+    "shopItemPrice": "{{ conversation.shopItemPrice }}",
+    "datetime": "{{ conversation.datetime }}",
+    "exactDate": "{{ conversation.exactDate|date:'Y-m-d H:i:s' }}",
+    "timeFromNow": "{{ conversation.date_fromnow }}",
+    "isRead": "{{ conversation.isRead }}",
+    "endOfList": "{{ conversation.endOfList }}"
+  }{% ifnotequal conversation.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

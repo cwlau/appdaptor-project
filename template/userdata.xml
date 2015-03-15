@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<response>{% spaceless %}
+<users>
+{% for userInfo in users %}
+<userinfo 
+	nickname="{{ userInfo.nickname }}"
+	email="{{ userInfo.email }}"
+	level="{{ userInfo.level|default_if_none:"invited" }}"
+	invitedBy="{{ userInfo.invitedBy|default_if_none:"n" }}"
+	fileCount="{{ userInfo.fileCount|default_if_none:"0" }}"
+	viewCount="{{ userInfo.viewCount|default_if_none:"0" }}"
+	storageOccupied="{{ userInfo.storageOccupied|filesizeformat }}"
+	
+	lastLogin="{{ userInfo.lastLogin|translate_timezone|oneDayOrDate }}"
+	lastLoginfulldatetime="{{ userInfo.lastLogin|translate_timezone|date:"H:i, M d, Y" }}"
+	lastLoginTimestamp="{{ userInfo.lastLogin|translate_timezone|timestamp }}"
+	lastLoginFromNow="{{ userInfo.lastLogin|fromnow }}"
+	adminNote="{{ userInfo.adminNote|default_if_none:"n" }}"
+/>
+{% endfor %}
+</users>
+{% endspaceless %}
+</response>
+
+{% comment %}
+
+			{% autoescape off %}
+			{% endautoescape %}
+
+{% endcomment %}
+

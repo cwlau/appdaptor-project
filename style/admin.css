@@ -1,0 +1,130 @@
+
+/* Admin Management */
+
+
+.adminMangement{font-size:0.9em;}
+.adminMangement_adminList{margin-bottom:40px;}
+.adminMangement_adminListTitle{margin:0;margin-top:14px;padding:10px;border-top:1px solid #ddd;border-bottom:1px solid #ddd;background-color:#F3F5FF;}
+.adminMangement_adminListTitle div{display:inline-block;}
+.adminMangement_adminListTitle_applicationAdmin{background-color:#FFF6F5;margin-top:60px;}
+
+.adminMangement_adminListTitleSearchTool{float:right;width:350px;margin-top:-10px;text-align:right;}
+.adminMangement_adminListTitleSearchTool *{text-align:left;}
+.adminMangement_adminListTitleSearchToolForId{width:300px;}
+.adminMangement_adminListTitleSearchTool input#addAdminInput{width:200px;}
+.adminMangement_adminListTitleSearchTool input.searchIdInput{width:140px;}
+.adminMangement_adminListTitleSearchTool span.button{padding-left:12px;padding-right:12px;}
+
+.adminMangement_adminDetail a{text-decoration:none;}
+
+.adminMangement_adminDetail, .adminMangement_adminDetailTitle{padding:6px;}
+.adminMangement_adminDetail:hover{background-color:#F8F9FD;}
+.adminMangement_adminDetailTitle{background-color:#fcfcfc;border-bottom:1px solid #eee;}
+
+.adminMangement_adminDetail .adminName, .adminMangement_adminDetail .adminTool{display:inline-block;font-size:0.9em;}
+.adminMangement_adminDetailTitle .adminName, .adminMangement_adminDetailTitle .adminTool{display:inline-block;font-size:0.9em;}
+.adminMangement_adminDetail .adminName{}
+.adminMangement_adminDetail .adminTool, .adminMangement_adminDetailTitle .adminTool{width:300px;float:right;font-size:0.9em;}
+
+.adminMangement_adminDetailTitle{}
+.adminMangement_adminListContent_Static div{padding:6px;}
+
+.adminRemove, .accountDeactivate, .accountActivate, .deleteItemByAdmin{cursor:pointer;color:#757575;}
+.adminRemove:hover, .accountDeactivate:hover, .accountActivate:hover, .deleteItemByAdmin:hover{color:#FF882E;text-decoration:underline;}
+
+/* User Search */
+
+.userId, .name, .itemCount, .accStatus{
+  display:inline-block;width:140px;white-space:wrap;vertical-align:top;font-size:0.9em;}
+.userId{width:160px;}
+.name{width:160px;}
+.accStatus{width:120px;}
+
+
+
+/* Item Search */
+
+.itemId, .itemName, .itemOwner, .viewCount, .status, .itemTool{
+  display:inline-block;width:140px;vertical-align:top;font-size:0.9em;}
+.itemId{width:160px;}
+.itemName{width:260px;overflow:hidden;}
+.itemOwner{width:130px;overflow:hidden;}
+.viewCount{width:100px;}
+.status{width:90px;}
+.itemTool{width:150px;float:right;}
+
+
+/* Wishlist Management */
+
+.wishlistItemName, .wishlistItemOwner{
+  display:inline-block;width:140px;vertical-align:top;font-size:0.9em;}
+.wishlistItemName{width:360px;overflow:hidden;}
+.wishlistItemOwner{width:150px;overflow:hidden;}
+
+.deleteWishlistItemByAdmin{cursor: pointer;}
+
+
+/* Event Log Management */
+.eventType, .actorName, .eventTarget, .eventDetails, .eventDate{
+  display:inline-block;width:180px;white-space:pre-wrap;vertical-align:top;font-size:0.9em;
+}
+
+.eventType{width:190px;}
+.actorName{width:110px;}
+.eventTarget{}
+.eventDetails{width:295px;}
+.eventDate{width:120px;}
+
+div.changeSearchType span {margin-left:4px;margin-right:4px;}
+div.changeSearchType .dropdownMenu {top:27px;min-width:240px;max-height:364px;overflow-y:auto;z-index:10;}
+div.changeSearchType .dropdownMenu div{display:block;}
+span#eventTypeText {padding:1px;margin:0;min-width:200px;display:inline-block;}
+
+
+/* Application Settings */
+
+input.env_input{padding:2px;width:80px;}
+input.env_input:active, input.env_input:focus{margin:0;}
+input.env_input_edited{background-color:#FFFBD1;border:1px solid #bbb;padding:3px;}
+input.env_input_error{border:2px solid #E10000;margin:-1px;}
+input.env_input_error:focus{margin:-1px;}
+
+.env_varName, .env_description, .env_value, 
+.env_restrictedNicknameType, .env_restrictedNicknameValue, .env_restrictedNicknameTool, .env_restrictedNicknameRemarks, 
+.jobName, .jobEnable{
+  display:inline-block;width:200px;vertical-align:top;font-size:0.9em;
+}
+
+.env_varName{}
+.env_description{width:580px;}
+.env_value{width:130px;}
+
+.env_restrictedNicknameType{}
+.env_restrictedNicknameValue{width:150px}
+.env_restrictedNicknameRemarks{width:350px}
+.env_restrictedNicknameTool{}
+
+.jobName{width:600px}
+.jobEnable{width:300px;}
+
+.jobTitle{font-size:1.2em;margin-bottom:6px;}
+
+.env_restrictedNickname_remove{cursor:pointer;}
+
+
+/* Application settings - API */
+.api_keyId, .api_domain, .api_key, .api_remarks, .api_tool{
+  display:inline-block;width:200px;vertical-align:top;font-size:0.9em;overflow:hidden;
+}
+.api_keyId{width:160px;}
+.api_domain{width:200px;}
+.api_key{width:200px;}
+.api_remarks{width:150px;}
+.api_tool{width:160px;}
+
+.deletePartnerApiButton, .deleteOwnApiButton{cursor:pointer;}
+
+
+
+
+

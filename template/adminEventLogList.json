@@ -1,0 +1,16 @@
+{% spaceless %}
+[
+{% for eventLog in eventLogList %}  {
+    "eventType": "{{ eventLog.eventType }}",
+    "actorName": "{{ eventLog.actorName }}",
+    "eventTarget": "{{ eventLog.eventTarget }}",
+    "eventDetails": "{{ eventLog.eventDetails }}",
+    "datetime": "{{ eventLog.datetime }}",
+    "exactDate": "{{ eventLog.exactDate|date:'Y-m-d H:i:s' }}",
+    "timeFromNow": "{{ eventLog.date_fromnow }}",
+    "endOfList": "{{ eventLog.endOfList }}"
+  }{% ifnotequal eventLog.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

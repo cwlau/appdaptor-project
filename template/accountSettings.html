@@ -1,0 +1,116 @@
+{% extends "template.html" %}
+{% block title %}
+  Account Settings | Demo Shop
+{% endblock %}
+
+
+{% block canvas %}
+
+      <div class="addItemForm itemEditor">
+        <div class="addItemFormTitle">
+          My Account Settings
+        </div>
+        <div class="itemDetails">
+        
+        
+          <div class="formAttr ">
+            <div class="formAttrDesc " style="width:160px;font-size:0.9em;">Clear all items:</div>
+            <div class="formAttrValue formAttrEditDescription" style="width:400px;">
+              <span class="button linkButton deleteAllItemButton">Clear all items posted by me</span><br/>
+              <span class="formTips">This action cannot be undone. All your items will be removed from this site.</span>
+            </div>
+          </div>
+        
+          <div class="formAttr ">
+            <div class="formAttrDesc " style="width:160px;font-size:0.9em;">Close my account:</div>
+            <div class="formAttrValue formAttrEditDescription" style="width:400px;">
+              <span class="button linkButton closeAccountButton">Close My Account</span><br/>
+              <span class="formTips">This action cannot be undone. You will not be able to access your stuff from this site after closing your account.</span>
+            </div>
+          </div>
+          
+          
+          
+          <div class="addItemFormField addItemFormField_Submit" style="margin-top:20px;">
+            <div class="formAttrDesc " style="width:160px;"></div>
+            <div class="formAttrValue" style="width:400px;">
+              <a href="/user/myProfile"><span class="button linkButton" style="padding-left:10px;padding-right:10px;">Back</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+{% endblock %}
+
+
+
+
+
+{% block bottomScript %}
+<script type="text/javascript">
+
+
+$(".deleteAllItemButton").click(function(){
+  var c = confirm("Are you sure to delete all your items? \nThis action cannot be undone.");
+  if (!c){
+    return;
+  }
+  
+  $(".loading_msg").show();
+  $.ajax({
+      type: "POST",
+      url:  "/user/settings/deleteAllMyItems",
+      data: { },
+      success:function(xml){
+        var status = $("success",xml).text();
+        
+        if(status == "true"){
+          window.location.href="/?allItemsDeleted=true";
+          
+        }else{
+          alert("Error occurred. Cannot save changes.");
+          $(".loading_msg").hide();
+          console.log(xml);
+        }
+      },
+      error: function(){
+        alert(_GENERAL_ERROR);
+        $(".loading_msg").hide();
+      }
+  });
+});
+
+$(".closeAccountButton").click(function(){
+  var c = confirm("Are you sure to delete your account? \nThis action cannot be undone.");
+  if (!c){
+    return;
+  }
+  
+  $(".loading_msg").show();
+  $.ajax({
+      type: "POST",
+      url:  "/user/settings/deleteMyAccount",
+      data: { },
+      success:function(xml){
+        var status = $("success",xml).text();
+        
+        if(status == "true"){
+          window.location.href="/?accountDeleted=true";
+          
+        }else{
+          alert("Error occurred. Cannot save changes.");
+          $(".loading_msg").hide();
+          console.log(xml);
+        }
+      },
+      error: function(){
+        alert(_GENERAL_ERROR);
+        $(".loading_msg").hide();
+      }
+  });
+});
+
+
+</script>
+{% endblock %}
+

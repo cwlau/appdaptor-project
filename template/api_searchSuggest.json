@@ -1,0 +1,14 @@
+{% spaceless %}
+{
+"success": "true",
+"message": "",
+"items":[
+{% for itemInfo in items %}  {% ifnotequal itemInfo.noComma 'true' %},{% endifnotequal %}{
+    "itemId": "{{ itemInfo.id }}",
+    "fullString": "{{ itemInfo.title }}"
+  }
+{% endfor %}
+]
+}
+
+{% endspaceless %}

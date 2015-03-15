@@ -1,0 +1,176 @@
+{% extends "adminTemplate.html" %}
+{% block title %}
+  Event Log - Admin Console | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+<style>
+.bar_event{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+
+<div class="adminMangement">
+
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>Event Log</div>
+      <div class="adminMangement_adminListTitleSearchTool" style="width:500px;">
+      
+        <div class="searchType button changeSearchType" ><span id="eventTypeText">
+          {% ifequal optionalInfo.actionType '' %}All Events{% else %}{{ optionalInfo.actionType }}{% endifequal %}
+        </span><span class="arrow"></span></div>
+        
+        <input type="text" id="searchUserNicknameInput" placeholder="Search Actor Name" value="{{ optionalInfo.actor }}" />
+        <span class="button linkButton searchEventLogButton">Search</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="eventType">Event Type</div>
+      <div class="actorName">Account</div>
+      <div class="eventTarget">Details</div>
+      <div class="eventDetails">Remarks</div>
+      <div class="eventDate">Date<span class="arrow"></span></div>
+    </div>
+    
+    <div class="adminMangement_adminListContent">
+      <div class="adminMangement_adminDetail">
+        <div class="adminName">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+
+{% block includeStyle %}
+<link href='/style/jquery-ui-1.10.0.autocomplete.min.css' rel='stylesheet' type='text/css'>
+<link href='/style/admin.css' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+
+{% block bottomScript %}
+<script>
+
+// counter for toggling display for dropdown menu
+var aa = 0;
+var actor = "{{ optionalInfo.actor }}";
+var actionType = "{{ optionalInfo.actionType }}";
+var eventTypeList = [{% for event in optionalInfo2 %}{% ifequal event '' %}''{% else %}, '{{ event }}'{% endifequal %}{% endfor %}];
+
+$(".changeSearchType").live("click", function(){
+  $("div.dropdownMenu").remove();
+  if(aa++%2==0){
+    var originalActionType = actionType;
+    var toAppend = $("<div class='dropdownMenu'></div>");
+    
+    // generate the full list of event type
+    for (i in eventTypeList) {
+      if(i == 0){
+        toAppend.append("<div class='selectAllEvents'>All Events</div>");
+        continue;
+      }
+      toAppend.append("<div class='selectEvent' data-event='"+ eventTypeList[i] + "' >"+ eventTypeList[i] + "</div>");
+    }
+    
+    toAppend.appendTo(this);
+    
+    $(".selectAllEvents").mousedown(function(){actionType = "";$("#eventTypeText").html("All Events"); });
+    $(".selectEvent").mousedown(function(){actionType = $(this).data("event");$("#eventTypeText").html($(this).data("event")); });
+  }
+});
+$(".adminMangement_adminListContent").click(function(){
+  aa=0;
+  $("div.dropdownMenu").remove();
+});
+
+$(".searchEventLogButton").click(function(){
+  actor = $("#searchUserNicknameInput").val();
+  displayEventLogList();
+});
+$("#searchUserNicknameInput").live("keyup", function(e){
+  if(e.keyCode == 13){$(".searchEventLogButton").trigger("click");}
+});
+
+
+var displayEventLogList = function(){
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/eventLogList",
+    dataType: "json",
+    data: {
+      actor: actor,
+      actionType: actionType
+    },
+    success: function(data){
+      if (data[0].status == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".adminMangement_adminListContent").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,eventLog){
+      
+        if (size == 0 && eventLog['endOfList'] == "True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+        
+        eventLogData = {
+          id: eventLog['id'],
+          eventType: eventLog['eventType'],
+          actorName: eventLog['actorName'],
+          eventTarget: eventLog['eventTarget'],
+          eventDetails: eventLog['eventDetails'],
+          datetime: eventLog['datetime'],
+          exactDate: eventLog['exactDate'],
+          timeFromNow: eventLog['timeFromNow']
+        };
+        
+        toAppend += $('#eventInfo').tmpl(eventLogData).html();
+        
+        size++;
+      });
+      
+      $(".adminMangement_adminListContent").html( toAppend );
+      
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+    }
+  });
+};
+
+displayEventLogList();
+</script>
+
+
+<script id="eventInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+      <div class="eventType">${eventType}</div>
+      <div class="actorName">${actorName}</div>
+      <div class="eventTarget">${eventTarget}</div>
+      <div class="eventDetails">${eventDetails}</div>
+      <div class="eventDate" title="${exactDate}">${datetime}</div>
+    </div></div>
+    
+</script>
+{% endblock %}
+
+

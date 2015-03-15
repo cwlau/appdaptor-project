@@ -1,0 +1,13 @@
+{% spaceless %}
+[
+{% for api in apiList %}  {
+    "id": "{{ api.id }}",
+    "domain": "{{ api.domain }}",
+    "key": "{{ api.key }}",
+    "remarks": "{{ api.remarks }}",
+    "endOfList": "{{ api.endOfList }}"
+  }{% ifnotequal api.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

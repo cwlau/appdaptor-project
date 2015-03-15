@@ -1,0 +1,25 @@
+{% spaceless %}
+[
+{% for itemInfo in items %}  {
+    "id": "{{ itemInfo.id }}",
+    "title": "{{ itemInfo.title|truncatewords:14 }}",
+    "description": "{{ itemInfo.description|striptags|truncatewords:15 }}",
+    "imageUrl": "{{ itemInfo.imageUrl }}",
+    "picBlobKeys": "{{ itemInfo.picBlobKeys }}",
+    "videoBlobKeys": "{{ itemInfo.videoBlobKeys }}",
+    "markedPrice": "{{ itemInfo.markedPriceInFloat|floatformat:2 }}",
+    "discountPrice": "{{ itemInfo.discountPriceInFloat|default:"0.0"|floatformat:2 }}",
+    "quantity": "{{ itemInfo.quantity }}",
+    "status": "{{ itemInfo.status }}",
+    "itemPartnerSite": "{{ itemInfo.itemPartnerSite }}",
+    "privacy": "{{ itemInfo.privacy }}",
+    "creationDate": "{{ itemInfo.creationDate|date:'Y-m-d H:i:s' }}",
+    "paymentMethod": "{{ itemInfo.paymentMethod }}",
+    "viewCount": "{{ itemInfo.viewCount }}",
+    "owner": "{{ itemInfo.owner }}",
+    "endOfList": "{{ itemInfo.endOfList }}"
+  }{% ifnotequal itemInfo.noComma 'true' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

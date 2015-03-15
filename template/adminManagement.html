@@ -1,0 +1,185 @@
+{% extends "adminTemplate.html" %}
+{% block title %}
+  Admin Management - Admin Console | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+<style>
+.bar_admin{
+border: 1px solid #ddd;background-color: #EEEEEE;
+padding:6px 11px !important;padding-bottom:7px !important;
+}
+</style>
+
+
+<div class="adminMangement">
+
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle">
+      <div>User Defined Admins</div>
+      <div class="adminMangement_adminListTitleSearchTool">
+        <input type="text" id="addAdminInput" placeholder="Account Nickname" />
+        <span class="button linkButton addAdmin">Add</span>
+      </div>
+    </div>
+    
+    <div class="adminMangement_adminDetailTitle">
+      <div class="adminName">Admin Account Nickname</div>
+      <div class="adminTool">Tools</div>
+    </div>
+    
+    <div class="adminMangement_adminListContent">
+      <div class="adminMangement_adminDetail">
+        <div class="adminName">Loading...</div>
+      </div>
+    </div>
+    
+    
+  </div>
+</div>
+      
+<div class="adminMangement">
+
+  <div class="adminMangement_adminList">
+    <div class="adminMangement_adminListTitle adminMangement_adminListTitle_applicationAdmin">
+      Application Admins
+    </div>
+    <div class="adminMangement_adminListContent_Static">
+      <div>Please contact Application Admin for assistance.</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block includeStyle %}
+<link href='/style/jquery-ui-1.10.0.autocomplete.min.css' rel='stylesheet' type='text/css'>
+<link href='/style/admin.css' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+{% block bottomScript %}
+
+<script>
+var load = function(){
+  $(".adminMangement_adminListContent").fadeTo("fast", 0.6);
+  $.ajax({
+    type: "POST",
+    url:  "/admin/listAdmin",
+    dataType: "json",
+    data: {},
+    success: function(data){
+      if (data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert(data[0].message);
+        $(".adminMangement_adminListContent").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+      var toAppend = "";
+      var size = 0;
+      
+      $.each(data, function(i,admin){
+        adminData = {
+          nickname: admin['nickname']
+        };
+        toAppend += $('#eventInfo').tmpl(adminData).html();
+        
+        if(admin['endOfList']=="True"){
+          toAppend = "<div class='resultNotFound'>No result is found.</div>";
+          return;
+        }
+        size++;
+      });
+      
+      $(".adminMangement_adminListContent").html( toAppend );
+      $(".loading_msg").hide();
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+    }
+  });
+};
+load();
+
+$(".addAdmin").live("click", function(){
+  addAdmin( $("#addAdminInput").val() );
+});
+$(".adminRemove").live("click", function(){
+  removeAdmin( $(this).data("nickname") );
+});
+
+var addAdmin = function(nickname){
+  $(".adminMangement_adminListContent").fadeTo("fast", 0.6);
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/addAdmin",
+    dataType: "json",
+    data: {"admin": nickname},
+    success: function(data){
+      if (data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert(data[0].message);
+        $(".adminMangement_adminListContent").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".loading_msg").hide();
+      load();
+      alert("Admin created successfully");
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+    }
+  });
+};
+var removeAdmin = function(nickname){
+  $(".loading_msg").show();
+  $.ajax({
+    type: "POST",
+    url:  "/admin/removeAdmin",
+    dataType: "json",
+    data: {"admin": nickname},
+    success: function(data){
+      if (data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".adminMangement_adminListContent").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".loading_msg").hide();
+      load();
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+      $(".adminMangement_adminListContent").fadeTo("fast", 1);
+    }
+  });
+};
+  
+</script>
+
+
+<script id="eventInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="adminMangement_adminDetail">
+      <div class="adminName">${nickname}</div>
+      <div class="adminTool">
+        <span class="adminRemove" data-nickname="${nickname}">Remove Admin</span>
+      </div>
+  </div></div>
+  
+  
+</script>
+{% endblock %}
+
+
+
+

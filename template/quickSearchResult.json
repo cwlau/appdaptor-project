@@ -1,0 +1,17 @@
+{% spaceless %}
+[
+{% for itemInfo in items %}  {% ifnotequal itemInfo.noComma 'true' %},{% endifnotequal %}{
+    "id": "{{ itemInfo.id }}",
+    "title": "{{ itemInfo.title|truncatewords:14 }}",
+    "imageUrl": "{{ itemInfo.imageUrl }}",
+    "markedPrice": "{{ itemInfo.markedPriceInFloat|floatformat:2 }}",
+    "quantity": "{{ itemInfo.quantity }}",
+    "viewCount": "{{ itemInfo.viewCount }}",
+    "wishListCount": "{{ itemInfo.wishListCount }}",
+    "owner": "{{ itemInfo.owner }}",
+    "endOfList": "{{ itemInfo.endOfList }}"
+  }
+{% endfor %}
+]
+
+{% endspaceless %}

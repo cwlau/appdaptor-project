@@ -1,0 +1,10 @@
+{% spaceless %}
+[
+{% for admin in adminList %}  {
+    "nickname": "{{ admin.nickname }}",
+    "endOfList": "{{ admin.endOfList }}"
+  }{% ifnotequal admin.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}

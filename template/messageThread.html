@@ -1,0 +1,287 @@
+{% extends "template.html" %}
+{% block title %}
+  {{ optionalInfo.title }} - Messages | Demo Shop
+{% endblock %}
+
+{% block canvas %}
+
+<div class="messageTopDiv">
+  <div class="messageTopDiv_left">
+    <div class="conversationTitle">{{ optionalInfo.title }}</div>
+  </div>
+  <div class="messageTopDiv_right">
+    <a href="/message/" style="margin-right:10px">&lt; Back</a>
+    <span class="button linkButton messageActionButton searchType n">Action<span class="arrow"></span></span>
+    <span class="button linkButton refreshMessageButton ">Refresh</span>
+    
+    {% if optionalInfo.itemId > 0 %}
+    <span class="button linkButton itemInfoButton">Item Info</span>
+    <a href="/item/{{optionalInfo.itemId}}" target="_blank"><div class="itemBlock">
+      <div class="itemBlockAttr itemBlockImage">
+        <img src="{{optionalInfo.itemImageUrl}}" />
+      </div>
+      <div class="itemBlockAttr itemBlockInfoContainer">
+        <div class="itemBlockTitle">{{optionalInfo.itemTitle}}</div>
+        <div class="itemBlockItemPrice">The price was $ {{optionalInfo.itemPriceInFloat|floatformat:2}} on {{optionalInfo.conversationBeginDate|date:'Y-m-d' }}</div>
+      </div>
+    </div></a>
+    {% endif %}
+    
+  </div>
+</div>
+
+
+
+<div class="messageThreadContainer">
+  <!-- conversation detail here -->
+</div>
+
+
+<div class="messageThreadReplyContainer">
+  <div class="messageThreadReply">
+
+    <div class="messageThread messageThreadSent">
+      
+      <a href="/user/myProfile">
+      <div class="messageThreadSenderInfo">
+        <div class="messageThreadSenderInfo_Pic">
+          <img src="{{ userInfo.imageUrl }}" style="width:60px;border:1px solid #ddd;padding:2px;" />
+        </div>
+        <div class="messageThreadSenderInfo_Name">{{ userInfo.nickname }}</div>
+      </div>
+      </a>
+      
+      <div class="messageThreadContentMainContainer">
+        <div class="">
+          <div class="messageThreadContentInfo_Content">
+            <textarea class="messageReplyInput" placeholder="Enter your message here"></textarea>
+          </div>
+        </div>
+        <div class="messageThreadReply_ToolDiv">
+          <div class="messageThreadReply_OptionalTip"><span class="errorTip"></span></div>
+          <div class="messageThreadReply_Submit">
+            <span class="button linkButton replyMessageButton ">Reply</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+
+
+
+{% block messageThreadModule %}
+<div class="moduleStyle">
+  <div class="moduleBarStyle barStyle">
+    People in this conversation
+  </div>
+  
+  <div class="module_conversationPeopleList">
+    {% for people in optionalInfo.recipientsInfo %}
+    <a href="/profile/{{ people.nickname }}" >
+      <div class="module_conversationPeople">
+        <div class="module_conversationPeopleImage">
+          <img src='{{ people.image }}' />
+        </div>
+        <div class="module_conversationPeopleNickname">
+          {{ people.nickname }}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+    
+  </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+{% block bottomScript %}
+<script>
+
+var _CURRENT_MESSAGE_TYPE = "inbox";
+
+
+$(".itemInfoButton").click(function () {
+  $(".itemBlock").toggle();
+});
+
+
+/*
+ * For loading all messages in a conversation at the first time
+ */
+var loadThread = function(){
+  
+  $(".loading_msg").show();
+  $(".messageThreadContainer").fadeTo("fast", 0.6);
+  totalItemCount = 0;
+  
+  $.ajax({
+    type: "POST",
+    url:  "/message/thread",
+    dataType: "json",
+    data: { "conversationId": "{{ optionalInfo.id}}" },
+    success: function(data){
+      if (data[0].success == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".messageThreadContainer").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".messageThreadContainer").fadeTo("fast", 1);
+      var toAppend = "";
+      
+      $.each(data, function(i,message){
+        
+        
+        messageData = {
+          sender: message['sender'],
+          senderImageUrl: message['senderImageUrl'],
+          recipient: message['recipient'],
+          content: message['content'].replace(/<br \/>/g, "\n"), // TODO
+          isRead: message['isRead'],
+          datetime: message['datetime'],
+          exactDate: message['exactDate'],
+          timeFromNow: message['timeFromNow'],
+          className: (message['sender']== _MY_ACCOUNT_NICKNAME ) ? " messageThreadSent" : ""
+        };
+        
+        toAppend += $('#conversationThreadInfo').tmpl(messageData).html();
+      });
+      
+      $(".messageThreadContainer").html( toAppend );
+      
+      $(".loading_msg").hide();
+      messageUtil.renewUnreadCount();
+      
+    },
+    error: function(){
+      $(".errorNotice").show();
+      $(".loading_msg").hide();
+      $(".messageThreadContainer").fadeTo("fast", 1);
+    }
+  });
+}
+
+// load inbox each time we enter this page.
+loadThread();
+
+$(".refreshMessageButton").click(function(){
+  loadThread();
+});
+
+var sendLocked = false;
+
+$(".replyMessageButton").click(function(){
+  // prevent double submission from UI
+  if (sendLocked == true){return;}
+  
+  sendLocked = true;
+  var content = $(".messageReplyInput").val();
+  
+  if (content==""){
+    $(".errorTip").html("Content field cannot be blank");
+    sendLocked = false;
+    return;
+  }
+  $(".errorTip").html("");
+  $(".loading_msg").show();
+  
+  $.ajax({
+    type: "POST",
+    url:  "/message/reply",
+    dataType: "json",
+    data: {
+      "conversationId": "{{ optionalInfo.id}}",
+      "content": content
+    },
+    success: function(data){
+      if (data.success == 'false'){
+        $(".loading_msg").hide();
+        alert("Error occurred. Please try again later.\n(Status Error)");
+        $(".messageThreadContainer").fadeTo("fast", 1);
+        return;
+      }
+      
+      $(".messageThreadContainer").fadeTo("fast", 1);
+      var toAppend = "";
+      
+      messageData = {
+        sender: _MY_ACCOUNT_NICKNAME,
+        senderImageUrl: _MY_ACCOUNT_PROFILEPIC,
+        recipient: "",
+        content: content.replace("/br/g", "<br/>"),
+        isRead: "",
+        datetime: "Just Now",
+        exactDate: "",
+        timeFromNow: "Seconds ",
+        className: " messageThreadSent"
+      };
+      
+      toAppend = $('#conversationThreadInfo').tmpl(messageData).html();
+      $(".messageThreadContainer").append( toAppend );
+      
+      $(".loading_msg").hide();
+      sendLocked = false;
+      
+      // Reload message data to refresh time
+      loadThread();
+      $(".messageReplyInput").val("");
+    },
+    error: function(){
+      alert(_GENERAL_ERROR);
+      $(".loading_msg").hide();
+      $(".messageThreadContainer").fadeTo("fast", 1);
+      sendLocked = false;
+    }
+  });
+
+});
+
+
+</script>
+
+<script id="conversationThreadInfo" type="text/x-jquery-tmpl">
+
+  <div class=""><div class="messageThread ${className}">
+  
+    <a href="/profile/${sender}">
+      <div class="messageThreadSenderInfo">
+        <div class="messageThreadSenderInfo_Pic">
+          <img src="${senderImageUrl}" />
+        </div>
+        <div class="messageThreadSenderInfo_Name">${sender}</div>
+      </div>
+    </a>
+    
+    <div class="messageThreadContentMainContainer">
+      <div class="messageThreadContentInfo_TimeContainer">
+        <div class="messageThreadContentInfo_Time">${datetime} (${timeFromNow}ago)</div>
+      </div>
+      <div class="">
+        <div class="messageThreadContentInfo_Content"><pre>${content}</pre></div>
+      </div>
+    </div>
+    
+  </div></div>
+ 
+ 
+</script>
+{% endblock %}
+
+
+{% block messageAlertModule %}
+{% endblock %}
+
+
+

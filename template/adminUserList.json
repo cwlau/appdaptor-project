@@ -1,0 +1,13 @@
+{% spaceless %}
+[
+{% for account in accountList %}  {
+    "id": "{{ account.id }}",
+    "nickname": "{{ account.nickname }}",
+    "itemCount": "{{ account.itemCount }}",
+    "status": "{{ account.status }}",
+    "endOfList": "{{ account.endOfList }}"
+  }{% ifnotequal account.noComma 'True' %},{% endifnotequal %}
+{% endfor %}
+]
+
+{% endspaceless %}
